@@ -14,11 +14,11 @@
       margin: 0;
       padding: 0;
       overflow-x: hidden;
-      background: linear-gradient(to bottom, 
-        #0a0015 0%, 
-        #1a0030 20%, 
-        #2d0050 50%, 
-        #ff006e 100%);
+      background: linear-gradient(to bottom,
+          #0a0015 0%,
+          #1a0030 20%,
+          #2d0050 50%,
+          #ff006e 100%);
       color: #e8e8ff;
       font-family: 'Rajdhani', sans-serif;
       height: 100%;
@@ -33,7 +33,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-image: 
+      background-image:
         linear-gradient(0deg, transparent 24%, rgba(0, 255, 255, .15) 25%, rgba(0, 255, 255, .15) 26%, transparent 27%, transparent 74%, rgba(0, 255, 255, .15) 75%, rgba(0, 255, 255, .15) 76%, transparent 77%, transparent),
         linear-gradient(90deg, transparent 24%, rgba(255, 0, 255, .15) 25%, rgba(255, 0, 255, .15) 26%, transparent 27%, transparent 74%, rgba(255, 0, 255, .15) 75%, rgba(255, 0, 255, .15) 76%, transparent 77%, transparent);
       background-size: 50px 50px;
@@ -59,7 +59,7 @@
       height: 200px;
       background: linear-gradient(to bottom, #ff006e, #ff9e00);
       border-radius: 50%;
-      box-shadow: 
+      box-shadow:
         0 0 50px #ff006e,
         0 0 100px #ff006e,
         0 0 150px #ff006e,
@@ -76,13 +76,11 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(0, 255, 255, 0.03) 0px,
-        rgba(0, 255, 255, 0.03) 1px,
-        transparent 1px,
-        transparent 2px
-      );
+      background: repeating-linear-gradient(0deg,
+          rgba(0, 255, 255, 0.03) 0px,
+          rgba(0, 255, 255, 0.03) 1px,
+          transparent 1px,
+          transparent 2px);
       animation: scanlines 8s linear infinite;
       pointer-events: none;
       z-index: 0;
@@ -94,16 +92,20 @@
       0% {
         background-position: 0 0;
       }
+
       100% {
         background-position: 50px 50px;
       }
     }
 
     @keyframes sunPulse {
-      0%, 100% {
+
+      0%,
+      100% {
         transform: translate(-50%, -50%) scale(1);
         filter: brightness(1);
       }
+
       50% {
         transform: translate(-50%, -50%) scale(1.05);
         filter: brightness(1.2);
@@ -114,12 +116,14 @@
       0% {
         transform: translateY(0);
       }
+
       100% {
         transform: translateY(10px);
       }
     }
 
     @keyframes flicker {
+
       0%,
       19%,
       21%,
@@ -175,7 +179,7 @@
       font-family: 'Orbitron', sans-serif;
       font-size: 3.5rem;
       color: #00ffff;
-      text-shadow: 
+      text-shadow:
         0 0 10px #00ffff,
         0 0 20px #00ffff,
         0 0 30px #ff00ff,
@@ -193,7 +197,7 @@
       color: #ff9e00;
       font-size: 1.5rem;
       margin-bottom: 1rem;
-      text-shadow: 
+      text-shadow:
         0 0 8px #ff9e00,
         0 0 16px #ff006e;
       animation: fadeIn 1.2s ease-in-out;
@@ -217,7 +221,7 @@
       background: rgba(0, 0, 0, 0.6);
       border: 2px solid #00ffff;
       border-radius: 10px;
-      box-shadow: 
+      box-shadow:
         0 0 15px rgba(0, 255, 255, 0.5),
         inset 0 0 10px rgba(255, 0, 255, 0.2);
       transition: all 0.3s ease;
@@ -227,7 +231,7 @@
     li:hover {
       background: rgba(255, 0, 255, 0.3);
       border-color: #ff00ff;
-      box-shadow: 
+      box-shadow:
         0 0 30px rgba(255, 0, 255, 0.8),
         0 0 50px rgba(0, 255, 255, 0.4);
       transform: scale(1.05) translateX(10px);
@@ -241,7 +245,7 @@
       border-radius: 12px;
       border: 2px solid #00ffff;
       background: rgba(0, 0, 0, 0.7);
-      box-shadow: 
+      box-shadow:
         0 0 20px rgba(0, 255, 255, 0.6),
         inset 0 0 20px rgba(255, 0, 255, 0.2);
       color: #00ffff;
@@ -252,7 +256,7 @@
     }
 
     .panel.active {
-      box-shadow: 
+      box-shadow:
         0 0 50px rgba(255, 0, 255, 0.9),
         0 0 100px rgba(0, 255, 255, 0.5);
     }
@@ -269,7 +273,7 @@
       border-radius: 30px;
       cursor: pointer;
       letter-spacing: 1px;
-      box-shadow: 
+      box-shadow:
         0 0 20px rgba(0, 255, 255, 0.6),
         0 0 40px rgba(255, 0, 110, 0.4),
         inset 0 0 10px rgba(255, 255, 255, 0.2);
@@ -281,7 +285,7 @@
 
     button:hover {
       transform: scale(1.1);
-      box-shadow: 
+      box-shadow:
         0 0 35px rgba(255, 0, 255, 0.9),
         0 0 60px rgba(0, 255, 255, 0.8);
       text-shadow: 0 0 10px #fff;
@@ -309,6 +313,42 @@
       font-size: 0.9rem;
       color: #7777ff;
       opacity: 0.7;
+    }
+
+    /* ===== MOUSE TRAIL PARTICLES ===== */
+    .cursor-trail {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: screen;
+      animation: fadeOut 0.8s ease-out forwards;
+    }
+
+    @keyframes fadeOut {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(0);
+        opacity: 0;
+      }
+    }
+
+    .cursor-glow {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      background: radial-gradient(circle, rgba(0, 255, 255, 0.6), transparent);
+      mix-blend-mode: screen;
+      transform: translate(-50%, -50%);
+      transition: all 0.1s ease;
     }
   </style>
 </head>
@@ -355,6 +395,57 @@
   </footer>
 
   <script>
+    // ===== NEON MOUSE TRAIL EFFECT =====
+    const colors = ['#00ffff', '#ff00ff', '#ff006e', '#ff9e00'];
+    let mouseX = 0;
+    let mouseY = 0;
+    let trailTimer = null;
+
+    // Create cursor glow that follows mouse
+    const cursorGlow = document.createElement('div');
+    cursorGlow.className = 'cursor-glow';
+    document.body.appendChild(cursorGlow);
+
+    // Track mouse position
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      
+      // Update cursor glow position
+      cursorGlow.style.left = mouseX + 'px';
+      cursorGlow.style.top = mouseY + 'px';
+
+      // Create trail particles
+      if (!trailTimer) {
+        createTrailParticle(mouseX, mouseY);
+        trailTimer = setTimeout(() => {
+          trailTimer = null;
+        }, 30); // Creates particle every 30ms for smooth trail
+      }
+    });
+
+    function createTrailParticle(x, y) {
+      const particle = document.createElement('div');
+      particle.className = 'cursor-trail';
+      
+      const size = Math.random() * 8 + 4;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      
+      particle.style.width = size + 'px';
+      particle.style.height = size + 'px';
+      particle.style.left = x - size / 2 + 'px';
+      particle.style.top = y - size / 2 + 'px';
+      particle.style.background = color;
+      particle.style.boxShadow = `0 0 ${size * 2}px ${color}`;
+      
+      document.body.appendChild(particle);
+      
+      // Remove particle after animation
+      setTimeout(() => {
+        particle.remove();
+      }, 800);
+    }
+
     // ===== CONFETTI EFFECT =====
     function createConfetti() {
       const colors = ['#7a00ff', '#00b7ff', '#00ffff', '#ff00ff', '#8a7eff'];

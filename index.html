@@ -14,15 +14,62 @@
       margin: 0;
       padding: 0;
       overflow-x: hidden;
+      background: #000;
+      color: #e8e8ff;
+      font-family: 'Rajdhani', sans-serif;
+      height: 100%;
+      position: relative;
+    }
+
+    /* ===== VIDEO BACKGROUND ===== */
+    .video-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -10;
+      overflow: hidden;
+    }
+
+    .video-background video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      transform: translate(-50%, -50%);
+      object-fit: cover;
+    }
+
+    /* Video overlay for better text readability */
+    .video-background::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 1;
+    }
+
+    /* Fallback gradient if no video */
+    .video-background::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background: linear-gradient(to bottom,
           #0a0015 0%,
           #1a0030 20%,
           #2d0050 50%,
           #ff006e 100%);
-      color: #e8e8ff;
-      font-family: 'Rajdhani', sans-serif;
-      height: 100%;
-      position: relative;
+      z-index: 0;
     }
 
     /* ===== 80's RETRO GRID BACKGROUND ===== */
@@ -332,6 +379,7 @@
         transform: scale(1);
         opacity: 1;
       }
+
       100% {
         transform: scale(0);
         opacity: 0;
@@ -354,6 +402,15 @@
 </head>
 
 <body>
+  <!-- Video Background -->
+  <div class="video-background">
+    <video autoplay muted loop playsinline id="bg-video">
+      <!-- Add your video file here -->
+      <!-- <source src="background.mp4" type="video/mp4"> -->
+      <!-- You can also use a YouTube or external video URL -->
+    </video>
+  </div>
+
   <!-- 80's Retro Scanline Overlay -->
   <div class="retro-overlay"></div>
 
@@ -410,7 +467,7 @@
     document.addEventListener('mousemove', (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
-      
+
       // Update cursor glow position
       cursorGlow.style.left = mouseX + 'px';
       cursorGlow.style.top = mouseY + 'px';
@@ -427,19 +484,19 @@
     function createTrailParticle(x, y) {
       const particle = document.createElement('div');
       particle.className = 'cursor-trail';
-      
+
       const size = Math.random() * 8 + 4;
       const color = colors[Math.floor(Math.random() * colors.length)];
-      
+
       particle.style.width = size + 'px';
       particle.style.height = size + 'px';
       particle.style.left = x - size / 2 + 'px';
       particle.style.top = y - size / 2 + 'px';
       particle.style.background = color;
       particle.style.boxShadow = `0 0 ${size * 2}px ${color}`;
-      
+
       document.body.appendChild(particle);
-      
+
       // Remove particle after animation
       setTimeout(() => {
         particle.remove();

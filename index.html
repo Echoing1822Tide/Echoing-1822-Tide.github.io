@@ -263,14 +263,112 @@
   </footer>
 
   <script>
-    function changePanels() {
-      const panels = document.querySelectorAll('.panel');
-      panels.forEach((p, i) => {
-        p.innerHTML = `<b>Panel ${i + 1} has evolved — pulsing in the neon tide.</b>`;
-        p.style.background = `rgba(${80 + i * 40}, 0, 255, 0.35)`;
-        p.style.boxShadow = `0 0 40px rgba(${0 + i * 50}, 150, 255, 0.8)`;
-      });
+    // ===== CONFETTI EFFECT =====
+    function createConfetti() {
+      const colors = ['#7a00ff', '#00b7ff', '#00ffff', '#ff00ff', '#8a7eff'];
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.style.position = 'fixed';
+        confetti.style.width = Math.random() * 10 + 5 + 'px';
+        confetti.style.height = confetti.style.width;
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.left = Math.random() * window.innerWidth + 'px';
+        confetti.style.top = '-20px';
+        confetti.style.opacity = '1';
+        confetti.style.borderRadius = '50%';
+        confetti.style.pointerEvents = 'none';
+        confetti.style.zIndex = '9999';
+        confetti.style.boxShadow = `0 0 10px ${confetti.style.backgroundColor}`;
+
+        document.body.appendChild(confetti);
+
+        const duration = Math.random() * 3 + 2;
+        const delay = Math.random() * 0.5;
+        const spin = Math.random() * 360;
+
+        confetti.animate([
+          {
+            transform: `translateY(0px) rotate(0deg)`,
+            opacity: 1
+          },
+          {
+            transform: `translateY(${window.innerHeight + 20}px) rotate(${spin}deg)`,
+            opacity: 0
+          }
+        ], {
+          duration: duration * 1000,
+          delay: delay * 1000,
+          easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+        });
+
+        setTimeout(() => confetti.remove(), (duration + delay) * 1000 + 100);
+      }
     }
+
+    // ===== PANEL MESSAGES =====
+    const panelMessages = [
+      [
+        "This is some important information about me!",
+        "This is some other information about me!",
+        "This is even more information about me!"
+      ],
+      [
+        "<b>Panel 1 has evolved — pulsing in the neon tide.</b>",
+        "<b>Panel 2 has evolved — pulsing in the neon tide.</b>",
+        "<b>Panel 3 has evolved — pulsing in the neon tide.</b>"
+      ],
+      [
+        "🎬 I watch movies to escape reality",
+        "📚 Books are portals to other worlds",
+        "💻 Code is my creative canvas"
+      ],
+      [
+        "⚡ Powered by curiosity and caffeine",
+        "🌊 Riding the digital waves",
+        "✨ Making magic with technology"
+      ],
+      [
+        "🚀 Launching ideas into orbit",
+        "🎮 Life is the ultimate game",
+        "🎨 Creating cyberpunk dreams"
+      ]
+    ];
+
+    let currentMessageSet = 0;
+
+    function changePanels() {
+      currentMessageSet = (currentMessageSet + 1) % panelMessages.length;
+      const messages = panelMessages[currentMessageSet];
+      const panels = document.querySelectorAll('.panel');
+
+      panels.forEach((p, i) => {
+        // Animate panel change
+        p.style.transform = 'scale(0.95)';
+        p.style.opacity = '0.5';
+
+        setTimeout(() => {
+          p.innerHTML = messages[i];
+          p.style.background = `rgba(${80 + i * 40}, 0, ${255 - i * 30}, 0.35)`;
+          p.style.boxShadow = `0 0 40px rgba(${0 + i * 50}, 150, 255, 0.8)`;
+          p.style.transform = 'scale(1)';
+          p.style.opacity = '1';
+        }, 200);
+      });
+
+      // Trigger confetti!
+      createConfetti();
+    }
+
+    // ===== CONFETTI ON LIST ITEM CLICK =====
+    document.querySelectorAll('li').forEach(li => {
+      li.addEventListener('click', function () {
+        createConfetti();
+        this.style.animation = 'none';
+        setTimeout(() => {
+          this.style.animation = 'fadeIn 0.5s ease-in-out';
+        }, 10);
+      });
+    });
 
     // ===== SOUND-REACTIVE EFFECT =====
     let audioCtx, analyser, dataArray;

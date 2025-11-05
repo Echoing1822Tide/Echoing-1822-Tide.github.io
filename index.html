@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Echoing Tide 1822</title>
+  <title>EchoingTide1822 - James Gill</title>
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Rajdhani:wght@400;600&display=swap');
@@ -225,7 +225,7 @@
 </head>
 
 <body>
-  <h1>Echoing Tide 1822</h1>
+  <h1>EchoingTide1822 - James Gill</h1>
   <h3>About Me</h3>
 
   <ol>
@@ -259,7 +259,7 @@
   <button onclick="changePanels()">Change Panels</button>
 
   <footer>
-    © 2025 Echoing Tide 1822 — Glowing through the static.
+    © 2025 EchoingTide1822 - James Gill — Glowing through the static.
   </footer>
 
   <script>
@@ -369,34 +369,6 @@
         }, 10);
       });
     });
-
-    // ===== SOUND-REACTIVE EFFECT =====
-    let audioCtx, analyser, dataArray;
-    function initAudio() {
-      navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(stream => {
-          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-          const source = audioCtx.createMediaStreamSource(stream);
-          analyser = audioCtx.createAnalyser();
-          analyser.fftSize = 256;
-          dataArray = new Uint8Array(analyser.frequencyBinCount);
-          source.connect(analyser);
-          animateGlow();
-        })
-        .catch(err => console.log('Audio init error:', err));
-    }
-
-    function animateGlow() {
-      requestAnimationFrame(animateGlow);
-      analyser.getByteFrequencyData(dataArray);
-      const avg = dataArray.reduce((a, b) => a + b) / dataArray.length;
-      const glow = avg / 2;
-      document.querySelectorAll('.panel').forEach(p => {
-        p.style.boxShadow = `0 0 ${glow}px rgba(0,255,255,${glow / 150})`;
-      });
-    }
-
-    document.body.addEventListener('click', initAudio, { once: true });
   </script>
 </body>
 

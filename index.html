@@ -404,7 +404,7 @@
 <body>
   <!-- Video Background -->
   <div class="video-background">
-    <video autoplay muted loop playsinline id="bg-video">
+    <video autoplay muted loop playsinline id="bg-video" preload="auto">
       <source src="background-final.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
@@ -451,6 +451,35 @@
   </footer>
 
   <script>
+    // ===== FORCE VIDEO TO PLAY =====
+    document.addEventListener('DOMContentLoaded', function () {
+      const video = document.getElementById('bg-video');
+
+      if (video) {
+        // Try to play the video
+        video.play().catch(function (error) {
+          console.log('Video autoplay failed:', error);
+          // If autoplay fails, try playing on user interaction
+          document.body.addEventListener('click', function () {
+            video.play();
+          }, { once: true });
+        });
+
+        // Log if video is loading
+        video.addEventListener('loadstart', function () {
+          console.log('Video is loading...');
+        });
+
+        video.addEventListener('loadeddata', function () {
+          console.log('Video loaded successfully!');
+        });
+
+        video.addEventListener('error', function (e) {
+          console.error('Video error:', e);
+        });
+      }
+    });
+
     // ===== NEON MOUSE TRAIL EFFECT =====
     const colors = ['#00ffff', '#ff00ff', '#ff006e', '#ff9e00'];
     let mouseX = 0;

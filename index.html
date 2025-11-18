@@ -13,16 +13,52 @@
       --text-color: #e6e9ff;
       --muted: #97a0ff;
       --panel-blur: 8px;
+      --bg-color: #000;
     }
-    [data-theme="dim"]{
-      --panel-bg: rgba(4,4,8,0.72);
-      --text-color: #d7d9ff;
-      --muted: #9aa8ff;
+    [data-theme="ocean"]{
+      --panel-bg: rgba(0,30,50,0.65);
+      --accent-cyan: #00d4ff;
+      --accent-magenta: #0088ff;
+      --text-color: #d0f0ff;
+      --muted: #7ac5ff;
+      --bg-color: #001a2e;
+    }
+    [data-theme="forest"]{
+      --panel-bg: rgba(10,35,15,0.65);
+      --accent-cyan: #00ff88;
+      --accent-magenta: #88ff00;
+      --text-color: #d8ffe8;
+      --muted: #7dff99;
+      --bg-color: #0a1f0a;
+    }
+    [data-theme="sunset"]{
+      --panel-bg: rgba(50,20,10,0.65);
+      --accent-cyan: #ff8800;
+      --accent-magenta: #ff0066;
+      --text-color: #ffe8d0;
+      --muted: #ffaa77;
+      --bg-color: #1a0f00;
+    }
+    [data-theme="purple"]{
+      --panel-bg: rgba(40,10,50,0.65);
+      --accent-cyan: #cc00ff;
+      --accent-magenta: #ff00cc;
+      --text-color: #f0d0ff;
+      --muted: #d088ff;
+      --bg-color: #1a001a;
+    }
+    [data-theme="neon"]{
+      --panel-bg: rgba(10,10,30,0.55);
+      --accent-cyan: #00ffff;
+      --accent-magenta: #ff00ff;
+      --text-color: #e6e9ff;
+      --muted: #97a0ff;
+      --bg-color: #000;
     }
 
     *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial; background:#000;color:var(--text-color)}
-    .video-background{position:fixed;inset:0;z-index:0;overflow:hidden;background:#000}
+    html,body{height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial; background:var(--bg-color);color:var(--text-color);transition:background-color 0.6s ease}
+    .video-background{position:fixed;inset:0;z-index:0;overflow:hidden;background:var(--bg-color);transition:background-color 0.6s ease}
     .video-background video{position:absolute;top:50%;left:50%;min-width:100%;min-height:100%;transform:translate(-50%,-50%);object-fit:cover;filter:contrast(1.02) saturate(1.05) brightness(0.9)}
     .retro-overlay{position:fixed;inset:0;z-index:1;pointer-events:none;background-image:linear-gradient(transparent 60%, rgba(0,0,0,0.12) 100%), radial-gradient(circle at 50% 10%, rgba(255,255,255,0.03), transparent 20%);mix-blend-mode:overlay}
 
@@ -33,16 +69,25 @@
     .btn:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.6)}
     .linkedin-btn{background:linear-gradient(90deg,#0077b5,#00a0dc);color:#fff;border:none;padding:.55rem .9rem}
     .panels{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;width:min(1100px,100%);margin:0 auto}
-    .panel{background:var(--panel-bg);border-radius:12px;padding:1rem;box-shadow:0 8px 30px rgba(16,14,28,0.6);backdrop-filter:blur(var(--panel-blur));border:1px solid rgba(255,255,255,0.04);transition:transform .22s,box-shadow .22s;min-height:90px;position:relative}
+    .panel{background:var(--panel-bg);border-radius:12px;padding:1rem;box-shadow:0 8px 30px rgba(16,14,28,0.6);-webkit-backdrop-filter:blur(var(--panel-blur));backdrop-filter:blur(var(--panel-blur));border:1px solid rgba(255,255,255,0.04);transition:transform .22s,box-shadow .22s,background-color 0.4s ease;min-height:90px;position:relative;cursor:pointer}
+    .panel:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(16,14,28,0.8)}
     .panel[aria-expanded="true"]{transform:translateY(-6px)}
-    .panel h3{color:var(--muted);font-size:1rem;margin-bottom:.4rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
-    .panel .body{color:var(--text-color);line-height:1.35}
-    .panel button.toggle{background:transparent;border:1px dashed rgba(255,255,255,0.06);color:var(--muted);padding:.25rem .5rem;border-radius:8px;cursor:pointer}
+    .panel h3{color:var(--muted);font-size:1rem;margin-bottom:.4rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem;pointer-events:none}
+    .panel .body{color:var(--text-color);line-height:1.35;margin-top:0.5rem}
     footer{margin-top:1.25rem;color:rgba(151,160,255,0.85);font-size:.9rem;text-align:center}
 
+    /* Hidden celebrate button */
+    #hiddenCelebrate{position:fixed;bottom:20px;right:20px;width:60px;height:60px;background:transparent;border:none;cursor:pointer;z-index:9999;opacity:0}
+    #hiddenCelebrate:hover{opacity:0.1}
+
+    /* Warp speed overlay */
+    .warp-overlay{position:fixed;inset:0;z-index:10000;pointer-events:none;display:none}
+    .warp-overlay.active{display:block}
+    .star{position:absolute;background:white;border-radius:50%}
+
     /* cursor trail */
-    .cursor-core{position:fixed;width:10px;height:10px;border-radius:50%;background:var(--accent-cyan);pointer-events:none;z-index:9999;mix-blend-mode:screen;transform:translate(-50%,-50%);opacity:.85;transition:transform .06s linear}
-    .cursor-trail-dot{position:fixed;width:8px;height:8px;border-radius:50%;pointer-events:none;z-index:9998;mix-blend-mode:screen;opacity:.9;transition:transform .08s linear,opacity .2s linear}
+    .cursor-core{position:fixed;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle, var(--accent-cyan), var(--accent-magenta));pointer-events:none;z-index:9999;mix-blend-mode:screen;transform:translate(-50%,-50%);opacity:.95;transition:transform .06s linear;box-shadow:0 0 20px var(--accent-cyan), 0 0 40px var(--accent-magenta);display:none}
+    .cursor-trail-dot{position:fixed;border-radius:50%;pointer-events:none;z-index:9998;mix-blend-mode:screen;transition:transform .08s linear,opacity .2s linear}
 
     @media(max-width:520px){.container{padding:2rem 1rem}}
   </style>
@@ -50,29 +95,27 @@
 <body data-theme="neon">
   <!-- Video + overlay -->
   <div class="video-background" aria-hidden="true">
-    <video autoplay muted loop id="bg-video" preload="auto" playsinline>
+    <video autoplay muted loop id="bg-video" preload="auto">
       <source src="background-final.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
   </div>
   <div class="retro-overlay" aria-hidden="true"></div>
+  <div class="warp-overlay" id="warpOverlay"></div>
 
   <main class="container">
     <h1>Career Lifeline – James Gill</h1>
 
     <div class="controls" role="toolbar" aria-label="Page controls">
       <a class="btn linkedin-btn" href="https://linkedin.com/in/james-gill-echoing1822tide" target="_blank" rel="noopener noreferrer">Connect on LinkedIn</a>
-      <button id="changePanelsBtn" class="btn" title="Change panel colors">Change Panels</button>
-      <button id="celebrateBtn" class="btn" title="Celebrate (confetti)">Celebrate</button>
       <button id="themeToggleBtn" class="btn" title="Toggle theme (T)">Toggle Theme</button>
       <button id="mouseTrailToggleBtn" class="btn" title="Toggle mouse trail (M)">Mouse Trail</button>
     </div>
 
     <section class="panels" id="panels" aria-live="polite">
-      <article class="panel" data-index="0" aria-expanded="false">
+      <article class="panel" data-index="0" aria-expanded="false" tabindex="0">
         <h3>
           <span>1. Job Title</span>
-          <button class="toggle" aria-label="Expand job title">Expand</button>
         </h3>
         <div class="body" hidden>
           <ul>
@@ -85,10 +128,9 @@
         </div>
       </article>
 
-      <article class="panel" data-index="1" aria-expanded="false">
+      <article class="panel" data-index="1" aria-expanded="false" tabindex="0">
         <h3>
           <span>2. Age / Timeline</span>
-          <button class="toggle" aria-label="Expand timeline">Expand</button>
         </h3>
         <div class="body" hidden>
           <ul>
@@ -101,10 +143,9 @@
         </div>
       </article>
 
-      <article class="panel" data-index="2" aria-expanded="false">
+      <article class="panel" data-index="2" aria-expanded="false" tabindex="0">
         <h3>
           <span>3. Likes</span>
-          <button class="toggle" aria-label="Expand likes">Expand</button>
         </h3>
         <div class="body" hidden>
           <ul>
@@ -116,10 +157,9 @@
         </div>
       </article>
 
-      <article class="panel" data-index="3" aria-expanded="false">
+      <article class="panel" data-index="3" aria-expanded="false" tabindex="0">
         <h3>
           <span>4. Dislikes</span>
-          <button class="toggle" aria-label="Expand dislikes">Expand</button>
         </h3>
         <div class="body" hidden>
           <ul>
@@ -130,10 +170,9 @@
         </div>
       </article>
 
-      <article class="panel" data-index="4" aria-expanded="false">
+      <article class="panel" data-index="4" aria-expanded="false" tabindex="0">
         <h3>
           <span>5. Transferable Skills</span>
-          <button class="toggle" aria-label="Expand skills">Expand</button>
         </h3>
         <div class="body" hidden>
           <ul>
@@ -148,8 +187,11 @@
     <footer>© 2025 EchoingTide1822 - James Gill</footer>
   </main>
 
-  <!-- cursor elements (added/removed at runtime) -->
-  <div id="cursorCore" class="cursor-core" style="display:none" aria-hidden="true"></div>
+  <!-- Hidden celebrate button -->
+  <button id="hiddenCelebrate" aria-label="Secret celebration"></button>
+
+  <!-- cursor elements -->
+  <div id="cursorCore" class="cursor-core" aria-hidden="true"></div>
 
   <script>
     // Basic utilities
@@ -165,135 +207,217 @@
       loadTheme();
     });
 
-    // Confetti (lightweight)
-    function createConfetti(count = 18) {
-      const colors = ['#00ffff','#ff00ff','#ffd700','#77ff88','#88ccff'];
-      for (let i = 0; i < count; i++) {
-        const el = document.createElement('div');
-        el.style.position = 'fixed';
-        const size = 6 + Math.random()*12;
-        el.style.width = `${size}px`; el.style.height = `${size}px`;
-        el.style.left = `${Math.random()*innerWidth}px`;
-        el.style.top = `${-20 - Math.random()*60}px`;
-        el.style.background = colors[Math.floor(Math.random()*colors.length)];
-        el.style.borderRadius = Math.random() > 0.5 ? '2px' : '50%';
-        el.style.zIndex = 9998;
-        el.style.pointerEvents = 'none';
-        document.body.appendChild(el);
-        const dx = (Math.random()*800) - 400;
-        const dy = innerHeight + 150 + Math.random()*200;
-        const rot = (Math.random()*720)-360;
-        el.animate([
-          { transform: 'translate(0,0) rotate(0deg)', opacity: 1 },
-          { transform: `translate(${dx}px, ${dy}px) rotate(${rot}deg)`, opacity: 0 }
-        ], { duration: 1700 + Math.random()*1000, easing: 'cubic-bezier(.2,.7,.3,1)' });
-        setTimeout(()=> el.remove(), 3000);
+    // Warp speed animation
+    function warpSpeed() {
+      const overlay = $('#warpOverlay');
+      overlay.classList.add('active');
+      overlay.innerHTML = '';
+      
+      const starCount = 200;
+      const stars = [];
+      
+      // Create stars
+      for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        const size = Math.random() * 3 + 1;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.top = `${Math.random() * 100}%`;
+        overlay.appendChild(star);
+        stars.push({
+          el: star,
+          x: parseFloat(star.style.left),
+          y: parseFloat(star.style.top),
+          z: Math.random() * 1000
+        });
       }
+
+      let speed = 0;
+      let frameCount = 0;
+      const maxFrames = 180;
+
+      function animate() {
+        frameCount++;
+        // Accelerate speed
+        speed = Math.pow(frameCount / 60, 2) * 5;
+        
+        if (frameCount > maxFrames - 30) {
+          overlay.style.background = `radial-gradient(circle, rgba(255,100,0,${(frameCount - (maxFrames - 30)) / 30}), transparent)`;
+        }
+
+        stars.forEach(star => {
+          star.z -= speed;
+          if (star.z <= 0) {
+            star.z = 1000;
+            star.x = Math.random() * 100;
+            star.y = Math.random() * 100;
+          }
+
+          const scale = 1000 / (1000 - star.z);
+          const x = (star.x - 50) * scale + 50;
+          const y = (star.y - 50) * scale + 50;
+          const size = scale * 2;
+          const brightness = Math.min(scale / 3, 1);
+
+          star.el.style.left = `${x}%`;
+          star.el.style.top = `${y}%`;
+          star.el.style.width = `${size}px`;
+          star.el.style.height = `${size}px`;
+          star.el.style.opacity = brightness;
+          star.el.style.boxShadow = `0 0 ${size * 2}px rgba(255,255,255,${brightness})`;
+        });
+
+        if (frameCount < maxFrames) {
+          requestAnimationFrame(animate);
+        } else {
+          // Supernova flash
+          overlay.style.background = 'radial-gradient(circle, rgba(255,255,255,1), rgba(255,150,0,0.8))';
+          setTimeout(() => {
+            overlay.classList.remove('active');
+            overlay.innerHTML = '';
+            overlay.style.background = '';
+          }, 500);
+        }
+      }
+
+      animate();
     }
 
-    // Panels: expand/collapse
+    // Panels: expand/collapse on click
     function initPanelToggles() {
       $$('.panel').forEach(panel => {
-        const btn = panel.querySelector('.toggle');
         const body = panel.querySelector('.body');
-        btn.addEventListener('click', () => togglePanel(panel, body, btn));
-        panel.setAttribute('tabindex','0');
+        panel.addEventListener('click', () => togglePanel(panel, body));
         panel.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); togglePanel(panel, body, btn); }
+          if (e.key === 'Enter' || e.key === ' ') { 
+            e.preventDefault(); 
+            togglePanel(panel, body);
+          }
         });
       });
     }
-    function togglePanel(panel, body, btn) {
+
+    function togglePanel(panel, body) {
       const open = panel.getAttribute('aria-expanded') === 'true';
       panel.setAttribute('aria-expanded', String(!open));
       if (open) {
-        body.hidden = true; btn.textContent = 'Expand';
+        body.hidden = true;
       } else {
-        body.hidden = false; btn.textContent = 'Collapse';
+        body.hidden = false;
         panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
 
-    // Panel theme cycling
-    const panelThemes = [
-      ['rgba(10,10,30,0.55)','rgba(14,6,36,0.52)','rgba(6,18,28,0.5)'],
-      ['rgba(8,20,16,0.52)','rgba(24,6,20,0.5)','rgba(16,10,28,0.48)'],
-      ['rgba(20,6,6,0.5)','rgba(6,20,20,0.5)','rgba(10,6,24,0.5)']
-    ];
-    let currentTheme = 0;
-    function changePanels() {
-      currentTheme = (currentTheme + 1) % panelThemes.length;
-      const theme = panelThemes[currentTheme];
-      $$('.panel').forEach((p,i) => p.style.background = theme[i % theme.length]);
-      createConfetti(10);
-    }
+    // Theme toggle with 5 themes
+    const themes = ['neon', 'ocean', 'forest', 'sunset', 'purple'];
+    let currentThemeIndex = 0;
 
-    // Theme toggle (neon/dim) persisted
     function loadTheme() {
       const stored = localStorage.getItem('site-theme') || 'neon';
-      document.body.setAttribute('data-theme', stored === 'dim' ? 'dim' : 'neon');
-    }
-    function toggleTheme() {
-      const current = document.body.getAttribute('data-theme') === 'dim' ? 'dim' : 'neon';
-      const next = current === 'dim' ? 'neon' : 'dim';
-      document.body.setAttribute('data-theme', next);
-      localStorage.setItem('site-theme', next);
-      createConfetti(6);
+      currentThemeIndex = themes.indexOf(stored);
+      if (currentThemeIndex === -1) currentThemeIndex = 0;
+      document.body.setAttribute('data-theme', themes[currentThemeIndex]);
     }
 
-    // Mouse trail (lightweight)
+    function toggleTheme() {
+      currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+      const newTheme = themes[currentThemeIndex];
+      document.body.setAttribute('data-theme', newTheme);
+      localStorage.setItem('site-theme', newTheme);
+      
+      // Visual feedback
+      const flash = document.createElement('div');
+      flash.style.cssText = 'position:fixed;inset:0;background:var(--accent-cyan);opacity:0.3;z-index:9999;pointer-events:none';
+      document.body.appendChild(flash);
+      flash.animate([{opacity: 0.3}, {opacity: 0}], {duration: 400});
+      setTimeout(() => flash.remove(), 400);
+    }
+
+    // Enhanced mouse trail
     let mouseTrailEnabled = false;
     let trailDots = [];
-    const trailCount = 8;
+    const trailCount = 25;
+    let mousePos = {x: 0, y: 0};
+
     function enableMouseTrail() {
       if (mouseTrailEnabled) return;
       mouseTrailEnabled = true;
       const core = $('#cursorCore');
       core.style.display = 'block';
-      for (let i=0;i<trailCount;i++){
+      
+      for (let i = 0; i < trailCount; i++) {
         const d = document.createElement('div');
         d.className = 'cursor-trail-dot';
-        d.style.background = i % 2 ? 'rgba(255,0,255,0.14)' : 'rgba(0,255,255,0.12)';
-        d.style.left='0px'; d.style.top='0px';
+        const size = 12 - (i * 0.4);
+        d.style.width = `${size}px`;
+        d.style.height = `${size}px`;
+        const hue = (i * 15) % 360;
+        d.style.background = `hsl(${hue}, 100%, 60%)`;
+        d.style.boxShadow = `0 0 ${size * 2}px hsl(${hue}, 100%, 60%)`;
+        d.style.left = '0px';
+        d.style.top = '0px';
         document.body.appendChild(d);
-        trailDots.push(d);
+        trailDots.push({el: d, x: 0, y: 0});
       }
+      
       document.addEventListener('mousemove', onMouse);
+      animateTrail();
     }
+
     function disableMouseTrail() {
       if (!mouseTrailEnabled) return;
       mouseTrailEnabled = false;
       $('#cursorCore').style.display = 'none';
-      trailDots.forEach(d => d.remove());
+      trailDots.forEach(d => d.el.remove());
       trailDots = [];
       document.removeEventListener('mousemove', onMouse);
     }
+
     function onMouse(e) {
+      mousePos.x = e.clientX;
+      mousePos.y = e.clientY;
+    }
+
+    function animateTrail() {
+      if (!mouseTrailEnabled) return;
+      
       const core = $('#cursorCore');
-      core.style.left = e.clientX + 'px';
-      core.style.top = e.clientY + 'px';
-      trailDots.forEach((d, idx) => {
-        const delay = (idx+1) * 8;
-        d.style.transform = `translate(${e.clientX - delay}px, ${e.clientY - delay}px)`;
-        d.style.opacity = String(1 - idx * 0.09);
+      core.style.left = mousePos.x + 'px';
+      core.style.top = mousePos.y + 'px';
+
+      trailDots.forEach((dot, idx) => {
+        const target = idx === 0 ? mousePos : trailDots[idx - 1];
+        dot.x += (target.x - dot.x) * 0.3;
+        dot.y += (target.y - dot.y) * 0.3;
+        dot.el.style.left = dot.x + 'px';
+        dot.el.style.top = dot.y + 'px';
+        dot.el.style.opacity = String(1 - (idx * 0.03));
       });
+
+      requestAnimationFrame(animateTrail);
     }
 
     // Controls wiring + keyboard shortcuts
-    function initControls(){
-      $('#changePanelsBtn').addEventListener('click', changePanels);
-      $('#celebrateBtn').addEventListener('click', () => createConfetti(22));
+    function initControls() {
       $('#themeToggleBtn').addEventListener('click', toggleTheme);
       $('#mouseTrailToggleBtn').addEventListener('click', () => {
-        if (mouseTrailEnabled) { disableMouseTrail(); $('#mouseTrailToggleBtn').textContent = 'Mouse Trail'; }
-        else { enableMouseTrail(); $('#mouseTrailToggleBtn').textContent = 'Mouse Trail (On)'; }
+        if (mouseTrailEnabled) {
+          disableMouseTrail();
+          $('#mouseTrailToggleBtn').textContent = 'Mouse Trail';
+        } else {
+          enableMouseTrail();
+          $('#mouseTrailToggleBtn').textContent = 'Mouse Trail (On)';
+        }
       });
+
+      $('#hiddenCelebrate').addEventListener('click', warpSpeed);
 
       document.addEventListener('keydown', (e) => {
         if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable)) return;
         if (e.key.toLowerCase() === 't') { toggleTheme(); flashBtn('#themeToggleBtn'); }
         if (e.key.toLowerCase() === 'm') { $('#mouseTrailToggleBtn').click(); flashBtn('#mouseTrailToggleBtn'); }
-        if (e.key.toLowerCase() === 'c') { createConfetti(28); flashBtn('#celebrateBtn'); }
       });
 
       function flashBtn(sel) {
@@ -303,18 +427,9 @@
       }
     }
 
-    // small accessibility: clicking any li triggers confetti + pulse
-    document.addEventListener('click', (e) => {
-      const li = e.target.closest('.panel li');
-      if (li) {
-        createConfetti(12);
-        li.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.03)' }, { transform: 'scale(1)' }], { duration: 260 });
-      }
-    });
-
-    // expose small helpers for dev console
+    // expose helpers for dev console
     window.Echoing = {
-      createConfetti, toggleTheme, enableMouseTrail, disableMouseTrail, changePanels
+      toggleTheme, enableMouseTrail, disableMouseTrail, warpSpeed
     };
   </script>
 </body>

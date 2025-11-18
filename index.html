@@ -265,7 +265,8 @@
     // Basic utilities
     const $ = sel => document.querySelector(sel);
     const $$ = sel => Array.from(document.querySelectorAll(sel));
-    let isCinematic = false; // NEW: prevent double-trigger
+    let isCinematic = false;
+    let cancelWarp = null; // NEW
 
     // Ensure video attempts to play
     document.addEventListener('DOMContentLoaded', () => {
@@ -278,8 +279,8 @@
 
     // Cinematic: fade to black, pause video, then warp
     function startCinematic() {
-      if (isCinematic) return;              // NEW
-      isCinematic = true;                   // NEW
+      if (isCinematic) return;
+      isCinematic = true;
 
       const blackout = $('#blackout');
       const video = $('#bg-video');
@@ -290,138 +291,195 @@
       if (videoBg) videoBg.style.opacity = '0';
       if (video) { try { video.pause(); } catch {} }
 
-      // After fade, begin warp (tune durations here)
-      setTimeout(() => warpSpeed({ starfieldMs: 26000, supernovaMs: 7000 }), 900);
+      // Start warp after short fade
+      setTimeout(() => warpSpeed({ starfieldMs: 22000, supernovaMs: 4000, whiteFlashMs: 140 }), 700);
     }
 
-    // Warp speed animation with strong late acceleration
-    function warpSpeed({ starfieldMs = 24000, supernovaMs = 6000 } = {}) {
+    // REPLACE: Canvas-based warp with star trails, strong late acceleration, longer supernova, and instant white-flash return
+    function warpSpeed({ starfieldMs = 20000, supernovaMs = 4000, whiteFlashMs = 120 } = {}) {
       const overlay = $('#warpOverlay');
       overlay.classList.add('active');
       overlay.innerHTML = '';
 
-      const starCount = 1200; // more stars
-      const stars = [];
+      const canvas = document.createElement('canvas');
+      canvas.id = 'warpCanvas';
+      overlay.appendChild(canvas);
+      const ctx = canvas.getContext('2d');
 
-      for (let i = 0; i < starCount; i++) {
-        const star = document.createElement('div');
-        star.className = 'star';
-        const size = Math.random() * 2 + 0.8;
-        star.style.width = `${size}px`;
-        star.style.height = `${size}px`;
-        overlay.appendChild(star);
-        stars.push({
-          el: star,
-          x: Math.random() * 100,
-          y: Math.random() * 100,
-          z: Math.random() * 5000 + 1500
-        });
+      let cx, cy, fov, rafId;
+      const depth = 7000;
+      const minZ = 60;
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        cx = canvas.width / 2;
+        cy = canvas.height / 2;
+        fov = Math.min(canvas.width, canvas.height) * 0.9;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      const starCount = Math.max(900, Math.floor((canvas.width * canvas.height) / 1000)); // dense field
+      const stars = Array.from({ length: starCount }, () => newStar());
+
+      function newStar() {
+        return {
+          x: (Math.random() * 2 - 1),
+          y: (Math.random() * 2 - 1),
+          z: Math.random() * (depth - minZ) + minZ
+        };
       }
 
-      const lerp = (a, b, t) => a + (b - a) * t;
-      const clamp01 = v => Math.max(0, Math.min(1, v));
-      const easeInCubic = t => t * t * t;                  // gentle
-      const easeInExpo = t => (t <= 0 ? 0 : Math.pow(2, 10 * t - 10)); // rockets late
+      ctx.lineCap = 'round';
+      ctx.globalCompositeOperation = 'lighter';
 
-      let start = null;
-      let last = performance.now();
+      const state = { phase: 'starfield', start: null, last: performance.now(), running: true };
 
-      function animate(ts) {
-        if (!start) start = ts;
-        const dt = Math.max(0.001, (ts - last) / 1000);
-        last = ts;
+      function drawStarfield(ts) {
+        if (!state.start) { state.start = ts; state.last = ts; }
+        const dt = Math.max(0.001, (ts - state.last) / 1000);
+        state.last = ts;
 
-        const elapsed = ts - start;
-        const t = clamp01(elapsed / starfieldMs);
+        const elapsed = ts - state.start;
+        const t = Math.min(1, elapsed / starfieldMs);
 
-        // Piecewise acceleration: smooth early, explosive late
+        // Acceleration: slow build -> fast -> insane right before nova
         let speed;
-        if (t < 0.85) {
-          const t1 = t / 0.85;
-          speed = lerp(80, 1200, easeInCubic(t1));         // slow build
+        if (t < 0.75) {
+          const t1 = t / 0.75;
+          speed = 200 + 1800 * (t1 * t1 * t1);
+        } else if (t < 0.93) {
+          const t2 = (t - 0.75) / 0.18;
+          speed = 2000 + 3000 * (t2 ** 5);
         } else {
-          const t2 = (t - 0.85) / 0.15;
-          // normalize expo to 0..1-ish then scale
-          const expo = Math.min(1, easeInExpo(t2) / 1024);
-          speed = lerp(1200, 5200, expo);                  // near-warp burst
+          const t3 = (t - 0.93) / 0.07;
+          speed = 5000 + 9000 * Math.min(1, Math.pow(2, 10 * t3) / 1024);
         }
 
-        stars.forEach(star => {
-          star.z -= speed * dt;
-          if (star.z <= 0) {
-            star.z = 6000;
-            star.x = Math.random() * 100;
-            star.y = Math.random() * 100;
+        // Motion-blur persistence
+        ctx.fillStyle = 'rgba(0,0,0,0.24)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        for (let i = 0; i < stars.length; i++) {
+          const s = stars[i];
+
+          const prevX = cx + (s.x * fov) / s.z;
+          const prevY = cy + (s.y * fov) / s.z;
+
+          s.z -= speed * dt;
+
+          let off = false;
+          if (s.z < minZ) off = true;
+
+          const sx = cx + (s.x * fov) / s.z;
+          const sy = cy + (s.y * fov) / s.z;
+
+          if (sx < -80 || sx > canvas.width + 80 || sy < -80 || sy > canvas.height + 80) off = true;
+
+          if (off) {
+            stars[i] = newStar();
+            continue;
           }
-          // perspective
-          const scale = 1200 / (star.z + 1);
-          const x = (star.x - 50) * (1 + scale * 14) + 50;
-          const y = (star.y - 50) * (1 + scale * 14) + 50;
-          const pxSize = Math.max(1, scale * 9);
-          const brightness = Math.min(1, scale * 5);
 
-          const el = star.el;
-          el.style.left = `${x}%`;
-          el.style.top = `${y}%`;
-          el.style.width = `${pxSize}px`;
-          el.style.height = `${pxSize}px`;
-          el.style.opacity = brightness;
-          el.style.boxShadow = `0 0 ${pxSize * 3}px rgba(255,255,255,${brightness})`;
-        });
+          const v = Math.hypot(sx - prevX, sy - prevY);
+          const depthNorm = 1 - s.z / depth;
+          const width = Math.min(7, 0.8 + v * 0.15 + depthNorm * 3.5);
+          const alpha = Math.min(1, 0.25 + depthNorm * 0.9);
 
-        // Warm-up glow in last 3s before supernova
+          ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+          ctx.shadowColor = 'rgba(255,255,255,1)';
+          ctx.shadowBlur = 12 + depthNorm * 34;
+          ctx.lineWidth = width;
+          ctx.beginPath();
+          ctx.moveTo(prevX, prevY);
+          ctx.lineTo(sx, sy);
+          ctx.stroke();
+        }
+
+        // Warm glow before nova
         const timeLeft = starfieldMs - elapsed;
-        if (timeLeft < 3000 && timeLeft > 0) {
-          const p = 1 - timeLeft / 3000;
-          overlay.style.background = `radial-gradient(circle, rgba(255,180,80,${p * 0.6}) 0%, rgba(0,0,0,0) 65%)`;
+        if (timeLeft < 1200) {
+          const p = 1 - timeLeft / 1200;
+          const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(cx, cy) * 0.9);
+          grad.addColorStop(0, `rgba(255,200,120,${p * 0.7})`);
+          grad.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = grad;
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.globalCompositeOperation = 'lighter';
         }
 
-        if (elapsed < starfieldMs) {
-          requestAnimationFrame(animate);
-        } else {
-          // Begin supernova phase (longer)
-          supernova(supernovaMs, overlay, () => endCinematic());
-        }
-      }
-
-      requestAnimationFrame(animate);
-    }
-
-    // Longer supernova, then clean up and return
-    function supernova(durationMs, overlay, onDone) {
-      const start = performance.now();
-
-      // fade out stars while nova expands
-      const nodes = Array.from(overlay.querySelectorAll('.star'));
-
-      function frame(ts) {
-        const p = Math.min(1, (ts - start) / durationMs);
-
-        // Fade stars
-        nodes.forEach(n => { n.style.opacity = String(1 - p); });
-
-        // Expanding/brightening core, then gentle fade
-        const inner = Math.min(60, 10 + p * 80); // inner radius %>
-        const outer = Math.min(100, 60 + p * 60);
-        const coreAlpha = 1 - Math.max(0, (p - 0.6)) / 0.4; // hold bright till 60%, then fade
-
-        overlay.style.background =
-          `radial-gradient(circle, rgba(255,255,255,${coreAlpha}) 0%,
-                                   rgba(255,200,120,${Math.max(0.6, 1 - p * 0.5)}) ${inner}%,
-                                   rgba(0,0,0,1) ${outer}%)`;
-
-        if (p < 1) {
-          requestAnimationFrame(frame);
-        } else {
-          // Cleanup overlay nodes
-          overlay.classList.remove('active');
-          overlay.innerHTML = '';
-          overlay.style.background = '';
-          if (typeof onDone === 'function') onDone();
+        if (elapsed < starfieldMs && state.running) {
+          rafId = requestAnimationFrame(drawStarfield);
+        } else if (state.running) {
+          state.phase = 'supernova';
+          state.start = null;
+          rafId = requestAnimationFrame(drawSupernova);
         }
       }
 
-      requestAnimationFrame(frame);
+      function drawSupernova(ts) {
+        if (!state.start) { state.start = ts; state.last = ts; }
+        const p = Math.min(1, (ts - state.start) / supernovaMs);
+
+        // Stronger fade to clear trails
+        ctx.fillStyle = 'rgba(0,0,0,0.4)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Expanding, brightening core
+        const r = (Math.max(cx, cy) * (0.5 + p * 1.5));
+        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+        grad.addColorStop(0, `rgba(255,255,255,${Math.min(1, 0.7 + p * 0.6)})`);
+        grad.addColorStop(0.35, `rgba(255,220,150,${Math.max(0.6, 1 - p * 0.4)})`);
+        grad.addColorStop(1, 'rgba(0,0,0,1)');
+        ctx.fillStyle = grad;
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        if (p < 1 && state.running) {
+          rafId = requestAnimationFrame(drawSupernova);
+        } else if (state.running) {
+          whiteFlashThenReturn();
+        }
+      }
+
+      function cleanup() {
+        state.running = false;
+        if (rafId) cancelAnimationFrame(rafId);
+        window.removeEventListener('resize', resize);
+        overlay.classList.remove('active');
+        overlay.innerHTML = '';
+      }
+
+      function whiteFlashThenReturn() {
+        const flash = document.createElement('div');
+        flash.style.cssText = 'position:fixed;inset:0;background:#fff;z-index:12000;pointer-events:none';
+        document.body.appendChild(flash);
+
+        cleanup();
+
+        // Instantly show site again
+        const blackout = $('#blackout');
+        const video = $('#bg-video');
+        const videoBg = $('#videoBg');
+
+        if (blackout) {
+          const prev = blackout.style.transition;
+          blackout.style.transition = 'none';
+          blackout.classList.remove('visible', 'show');
+          blackout.style.display = '';
+          void blackout.offsetHeight; // reflow
+          blackout.style.transition = prev || '';
+        }
+        if (videoBg) videoBg.style.opacity = '1';
+        if (video) { try { video.play(); } catch {} }
+
+        setTimeout(() => { flash.remove(); isCinematic = false; }, whiteFlashMs);
+      }
+
+      cancelWarp = cleanup;
+      rafId = requestAnimationFrame(drawStarfield);
     }
 
     // Fade back from black, resume video, allow retrigger

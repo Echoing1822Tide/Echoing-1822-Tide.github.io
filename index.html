@@ -1,360 +1,321 @@
- (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
-diff --git a/index.html b/index.html
-index 7603a728d1d09473dfa6982518221ff54b988469..466480524f0ac4b3748ac2dbae7237c5f83b3309 100644
---- a/index.html
-+++ b/index.html
-@@ -305,74 +305,50 @@
-       border: 2px solid #00ffff;
-       color: white;
-       padding: 0.8em 2em;
-       border-radius: 30px;
-       cursor: pointer;
-       letter-spacing: 1px;
-       box-shadow:
-         0 0 20px rgba(0, 255, 255, 0.6),
-         0 0 40px rgba(255, 0, 110, 0.4),
-         inset 0 0 10px rgba(255, 255, 255, 0.2);
-       transition: all 0.3s ease;
-       position: relative;
-       z-index: 10;
-       text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
-     }
- 
-     button:hover {
-       transform: scale(1.1);
-       box-shadow:
-         0 0 35px rgba(255, 0, 255, 0.9),
-         0 0 60px rgba(0, 255, 255, 0.8);
-       text-shadow: 0 0 10px #fff;
-       border-color: #ff00ff;
-     }
- 
--    /* ===== LINKEDIN BUTTON ===== */
--    .linkedin-btn {
--      background: linear-gradient(90deg, #0077b5, #00a0dc);
--      margin-top: 2rem;
--      font-size: 1.2rem;
--      padding: 1em 2.5em;
--      box-shadow: 0 0 25px rgba(0, 119, 181, 0.7);
--    }
--
--    .linkedin-btn:hover {
--      background: linear-gradient(90deg, #005582, #0077b5);
--      box-shadow: 0 0 40px rgba(0, 160, 220, 1);
--      transform: scale(1.12);
--    }
--
--    .linkedin-link {
--      text-decoration: none;
--    }
--
--    .linkedin-btn svg {
--      vertical-align: middle;
--      margin-right: 8px;
--    }
--
-     footer {
-       margin-top: 2rem;
-       padding: 1rem;
-       font-size: 0.9rem;
-       color: #7777ff;
-       opacity: 0.7;
-     }
- 
-     /* ===== MOUSE TRAIL PARTICLES ===== */
-     .cursor-trail {
-       position: fixed;
-       width: 10px;
-       height: 10px;
-       border-radius: 50%;
-       pointer-events: none;
-       z-index: 9999;
-       mix-blend-mode: screen;
-       animation: fadeOut 0.8s ease-out forwards;
-     }
- 
-     @keyframes fadeOut {
-       0% {
-         transform: scale(1);
-         opacity: 1;
-       }
-@@ -388,81 +364,157 @@
-       width: 20px;
-       height: 20px;
-       border-radius: 50%;
-       pointer-events: none;
-       z-index: 9998;
-       background: radial-gradient(circle, rgba(0, 255, 255, 0.6), transparent);
-       mix-blend-mode: screen;
-       transform: translate(-50%, -50%);
-       transition: all 0.1s ease;
-     }
-   </style>
- </head>
- 
- <body>
-   <!-- Video Background -->
-   <div class="video-background">
-   <video autoplay muted loop id="bg-video" preload="auto" webkit-playsinline x5-playsinline>
-       <source src="background-final.mp4" type="video/mp4">
-       Your browser does not support the video tag.
-     </video>
-   </div>
- 
-   <!-- 80's Retro Scanline Overlay -->
-   <div class="retro-overlay"></div>
- 
--  <h1>EchoingTide1822 - James Gill</h1>
--  <h3>About Me</h3>
--
--  <ol>
--    <li>I like movies</li>
--    <li>I like books</li>
--  </ol>
--
--  <div id="infopanel" class="panel">
--    This is some important information about me!
-+  <h1>Career Lifeline – James Gill</h1>
-+
-+  <div class="panel">
-+    <h3>1. Job Title</h3>
-+    <ul>
-+      <li>Electrical Power Production Craftsman →</li>
-+      <li>Power Production Supervisor →</li>
-+      <li>Contingency Training Supervisor →</li>
-+      <li>Team Lead / SME (BEAR, TFS, WRM, AMMPS) →</li>
-+      <li>Software Developer-in-Training (MSSA Cloud Application Development)</li>
-+    </ul>
-   </div>
- 
--  <div id="anotherPanel" class="panel">
--    This is some other information about me!
-+  <div class="panel">
-+    <h3>2. Age</h3>
-+    <ul>
-+      <li>18–20: Trainee, Apprentice Power Production</li>
-+      <li>21–25: Journeyman, Iraq/Afghanistan deployments, crisis operations</li>
-+      <li>26–30: Senior Craftsman, program builder, inspection reform</li>
-+      <li>31–35: NCOIC roles, global deployments, instructor-level performance</li>
-+      <li>36–38: Senior NCO, Workforce leader, Equipment Custodian for $258M assets</li>
-+      <li>38: Software Development student (C#, Azure, GitHub), MSSA Cohort CCAD21</li>
-+    </ul>
-   </div>
- 
--  <div id="anotherPanel2" class="panel">
--    This is even more information about me!
-+  <div class="panel">
-+    <h3>3. Likes</h3>
-+    <ul>
-+      <li>Building systems — whether it’s generators, logistics programs, or ‘now’ software.</li>
-+      <li>Solving problems under pressure — rockets, mortars, broken systems, bureaucracy.</li>
-+      <li>Teaching and mentoring — hundreds trained, supervisors coached, teams elevated.</li>
-+      <li>Structure with freedom — clear mission, but room to improve the process.</li>
-+      <li>Technology — PC building, AMMPS, C#, Visual Studio, GitHub, cloud apps.</li>
-+      <li>Meaningful work — missions that protect people or improve lives.</li>
-+      <li>Innovation — your inspection toolset, tracking systems, training programs.</li>
-+      <li>Calm environments — desert nights, storms, ocean waves, wide open spaces.</li>
-+      <li>Perseverance — you thrive in challenges that require grit.</li>
-+    </ul>
-   </div>
- 
--  <a href="https://linkedin.com/in/james-gill-echoing1822tide" target="_blank" rel="noopener" class="linkedin-link">
--    <button class="linkedin-btn">
--      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
--        <path
--          d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
--      </svg>
--      Connect on LinkedIn
--    </button>
--  </a>
-+  <div class="panel">
-+    <h3>4. Dislikes</h3>
-+    <ul>
-+      <li>Micromanagement — you prefer trust, mission clarity, and autonomy.</li>
-+      <li>Broken systems with no intent to fix them — you always improve what you touch.</li>
-+      <li>Pretension and arrogance — you value humility and genuine leadership.</li>
-+      <li>Stagnation — you need growth, movement, and learning.</li>
-+      <li>Toxic leadership — punishing instead of developing people.</li>
-+      <li>Inefficiency and sloppy processes — your record shows a zero-tolerance streak.</li>
-+      <li>Light pollution, noisy crowds, claustrophobic environments — you like open horizons.</li>
-+      <li>Disloyalty and dishonesty — self-explanatory.</li>
-+    </ul>
-+  </div>
- 
--  <button onclick="changePanels()">Change Panels</button>
-+  <div class="panel">
-+    <h3>5. Transferable Skills</h3>
-+    <h4>Leadership &amp; People Development</h4>
-+    <ul>
-+      <li>Led 3–55 personnel across multiple missions and deployments.</li>
-+      <li>Lead Trainer, Trained 800+ supervisors/managers on leadership, performance, and compliance.</li>
-+      <li>Mentored dozens of Airmen, accelerating upgrade training by months.</li>
-+      <li>Taught complex tasks under pressure (Mobile Aircraft Arresting Systems (MAAS), Basic Expeditionary Airfield Resources (BEAR) Program, Tension Fabric Shelter (TFS) systems, generator systems).</li>
-+    </ul>
-+    <h4>Systems Thinking &amp; Process Design</h4>
-+    <ul>
-+      <li>Built a 2,022-line inspection system used across 12 programs.</li>
-+      <li>Created tracking databases and standardization toolsets.</li>
-+      <li>Identified inefficiencies and resolved multi-year backlogs.</li>
-+      <li>Designed operational checklists, packing plans, and workflow improvements.</li>
-+    </ul>
-+    <h4>Technical Problem Solving</h4>
-+    <ul>
-+      <li>Diagnosed and repaired high-value power systems (5kW–12.7kW).</li>
-+      <li>Managed $258M in global equipment, 428 UTCs, 12.5K O&amp;M tasks.</li>
-+      <li>Executed global deployments supporting 11–16 CCMDs.</li>
-+      <li>Troubleshot AMMPS, generators, high-voltage, TFS, MAAS, and Large Aircraft Maintenance Shelters (LAMS).</li>
-+      <li>BIOS/OS troubleshooting, PC rebuilds, electrical + mechanical foundation.</li>
-+    </ul>
-+    <h4>Operational &amp; Project Management</h4>
-+    <ul>
-+      <li>Oversaw $4.6M in projects and contracts across 55 locations.</li>
-+      <li>Led airfield recovery operations protecting $1.2B in fighter aircraft.</li>
-+      <li>Managed logistics for 6–24 UTC deployments under urgent deadlines.</li>
-+      <li>Coordinated joint operations with Army, Marines, NATO, and international partners.</li>
-+    </ul>
-+    <h4>Instruction, Communication, UX Mindset</h4>
-+    <ul>
-+      <li>Built structured, user-focused systems to simplify compliance and operations.</li>
-+      <li>Designed training modules → clear, repeatable, “user-friendly” (early UX talent).</li>
-+      <li>Communicated across ranks and cultures, bridging technical + human needs.</li>
-+    </ul>
-+    <h4>Software &amp; Cloud Foundations (MSSA + Microsoft Learn)</h4>
-+    <ul>
-+      <li>Completed 6 Learning Paths, 38 Modules, 33+ hours of Microsoft C# training.</li>
-+      <li>Passed all module assessments with full mastery.</li>
-+      <li>Earned Foundational C# Developer Certification (Microsoft + FreeCodeCamp).</li>
-+      <li>Built working console applications, debugged systems, implemented logic, arrays, exceptions.</li>
-+      <li>Actively developing cloud development skills (C#, .NET, GitHub, Azure).</li>
-+    </ul>
-+    <h4>Mindset</h4>
-+    <ul>
-+      <li>Resilient → operated under rockets, mortars, combat conditions.</li>
-+      <li>Mission-driven → shows up every time, no excuses.</li>
-+      <li>Fast learner → BA, C#, MSSA prerequisites, deployed duties.</li>
-+      <li>Systems builder → you don’t just fix problems; you redesign the blueprint.</li>
-+    </ul>
-+  </div>
- 
-   <footer>
-     © 2025 EchoingTide1822 - James Gill
-   </footer>
- 
-   <script>
-     // ===== FORCE VIDEO TO PLAY =====
-     document.addEventListener('DOMContentLoaded', function () {
-       const video = document.getElementById('bg-video');
- 
-       if (video) {
-         // Try to play the video
-         video.play().catch(function (error) {
-           console.log('Video autoplay failed:', error);
-           // If autoplay fails, try playing on user interaction
-           document.body.addEventListener('click', function () {
-             video.play();
-           }, { once: true });
-         });
- 
-         // Log if video is loading
-         video.addEventListener('loadstart', function () {
-           console.log('Video is loading...');
-         });
- 
-@@ -547,93 +599,39 @@
-         document.body.appendChild(confetti);
- 
-         const duration = Math.random() * 3 + 2;
-         const delay = Math.random() * 0.5;
-         const spin = Math.random() * 360;
- 
-         confetti.animate([
-           {
-             transform: `translateY(0px) rotate(0deg)`,
-             opacity: 1
-           },
-           {
-             transform: `translateY(${window.innerHeight + 20}px) rotate(${spin}deg)`,
-             opacity: 0
-           }
-         ], {
-           duration: duration * 1000,
-           delay: delay * 1000,
-           easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-         });
- 
-         setTimeout(() => confetti.remove(), (duration + delay) * 1000 + 100);
-       }
-     }
- 
--    // ===== PANEL MESSAGES =====
--    const panelMessages = [
--      [
--        "This is some important information about me!",
--        "This is some other information about me!",
--        "This is even more information about me!"
--      ],
--      [
--        "<b>Panel 1 has evolved — pulsing in the neon tide.</b>",
--        "<b>Panel 2 has evolved — pulsing in the neon tide.</b>",
--        "<b>Panel 3 has evolved — pulsing in the neon tide.</b>"
--      ],
--      [
--        "🎬 I watch movies to escape reality",
--        "📚 Books are portals to other worlds",
--        "💻 Code is my creative canvas"
--      ],
--      [
--        "⚡ Powered by curiosity and caffeine",
--        "🌊 Riding the digital waves",
--        "✨ Making magic with technology"
--      ],
--      [
--        "🚀 Launching ideas into orbit",
--        "🎮 Life is the ultimate game",
--        "🎨 Creating cyberpunk dreams"
--      ]
--    ];
--
--    let currentMessageSet = 0;
--
--    function changePanels() {
--      currentMessageSet = (currentMessageSet + 1) % panelMessages.length;
--      const messages = panelMessages[currentMessageSet];
--      const panels = document.querySelectorAll('.panel');
--
--      panels.forEach((p, i) => {
--        // Animate panel change
--        p.style.transform = 'scale(0.95)';
--        p.style.opacity = '0.5';
--
--        setTimeout(() => {
--          p.innerHTML = messages[i];
--          p.style.background = `rgba(${80 + i * 40}, 0, ${255 - i * 30}, 0.35)`;
--          p.style.boxShadow = `0 0 40px rgba(${0 + i * 50}, 150, 255, 0.8)`;
--          p.style.transform = 'scale(1)';
--          p.style.opacity = '1';
--        }, 200);
--      });
--
--      // Trigger confetti!
--      createConfetti();
--    }
--
-     // ===== CONFETTI ON LIST ITEM CLICK =====
-     document.querySelectorAll('li').forEach(li => {
-       li.addEventListener('click', function () {
-         createConfetti();
-         this.style.animation = 'none';
-         setTimeout(() => {
-           this.style.animation = 'fadeIn 0.5s ease-in-out';
-         }, 10);
-       });
-     });
-   </script>
- </body>
- 
- </html>
-\ No newline at end of file
- 
-EOF
-)
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EchoingTide1822 - James Gill</title>
+
+  <style>
+    :root{
+      --panel-bg: rgba(10,10,30,0.55);
+      --accent-cyan: #00ffff;
+      --accent-magenta: #ff00ff;
+      --text-color: #e6e9ff;
+      --muted: #97a0ff;
+      --panel-blur: 8px;
+    }
+    [data-theme="dim"]{
+      --panel-bg: rgba(4,4,8,0.72);
+      --text-color: #d7d9ff;
+      --muted: #9aa8ff;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial; background:#000;color:var(--text-color)}
+    .video-background{position:fixed;inset:0;z-index:0;overflow:hidden;background:#000}
+    .video-background video{position:absolute;top:50%;left:50%;min-width:100%;min-height:100%;transform:translate(-50%,-50%);object-fit:cover;filter:contrast(1.02) saturate(1.05) brightness(0.9)}
+    .retro-overlay{position:fixed;inset:0;z-index:1;pointer-events:none;background-image:linear-gradient(transparent 60%, rgba(0,0,0,0.12) 100%), radial-gradient(circle at 50% 10%, rgba(255,255,255,0.03), transparent 20%);mix-blend-mode:overlay}
+
+    .container{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column;gap:1rem;align-items:center;padding:3.5rem 1rem}
+    h1{font-size:clamp(1.4rem,2.6vw,2.2rem);text-align:center;margin-bottom:.4rem}
+    .controls{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem;z-index:3}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;background:linear-gradient(90deg, rgba(0,255,255,0.06), rgba(255,0,255,0.04));color:var(--text-color);border:1px solid rgba(0,255,255,0.14);padding:.55rem .9rem;border-radius:999px;cursor:pointer;transition:transform .18s,box-shadow .18s}
+    .btn:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.6)}
+    .linkedin-btn{background:linear-gradient(90deg,#0077b5,#00a0dc);color:#fff;border:none;padding:.55rem .9rem}
+    .panels{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;width:min(1100px,100%);margin:0 auto}
+    .panel{background:var(--panel-bg);border-radius:12px;padding:1rem;box-shadow:0 8px 30px rgba(16,14,28,0.6);backdrop-filter:blur(var(--panel-blur));border:1px solid rgba(255,255,255,0.04);transition:transform .22s,box-shadow .22s;min-height:90px;position:relative}
+    .panel[aria-expanded="true"]{transform:translateY(-6px)}
+    .panel h3{color:var(--muted);font-size:1rem;margin-bottom:.4rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+    .panel .body{color:var(--text-color);line-height:1.35}
+    .panel button.toggle{background:transparent;border:1px dashed rgba(255,255,255,0.06);color:var(--muted);padding:.25rem .5rem;border-radius:8px;cursor:pointer}
+    footer{margin-top:1.25rem;color:rgba(151,160,255,0.85);font-size:.9rem;text-align:center}
+
+    /* cursor trail */
+    .cursor-core{position:fixed;width:10px;height:10px;border-radius:50%;background:var(--accent-cyan);pointer-events:none;z-index:9999;mix-blend-mode:screen;transform:translate(-50%,-50%);opacity:.85;transition:transform .06s linear}
+    .cursor-trail-dot{position:fixed;width:8px;height:8px;border-radius:50%;pointer-events:none;z-index:9998;mix-blend-mode:screen;opacity:.9;transition:transform .08s linear,opacity .2s linear}
+
+    @media(max-width:520px){.container{padding:2rem 1rem}}
+  </style>
+</head>
+<body data-theme="neon">
+  <!-- Video + overlay -->
+  <div class="video-background" aria-hidden="true">
+    <video autoplay muted loop id="bg-video" preload="auto" playsinline>
+      <source src="background-final.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+  <div class="retro-overlay" aria-hidden="true"></div>
+
+  <main class="container">
+    <h1>Career Lifeline – James Gill</h1>
+
+    <div class="controls" role="toolbar" aria-label="Page controls">
+      <a class="btn linkedin-btn" href="https://linkedin.com/in/james-gill-echoing1822tide" target="_blank" rel="noopener noreferrer">Connect on LinkedIn</a>
+      <button id="changePanelsBtn" class="btn" title="Change panel colors">Change Panels</button>
+      <button id="celebrateBtn" class="btn" title="Celebrate (confetti)">Celebrate</button>
+      <button id="themeToggleBtn" class="btn" title="Toggle theme (T)">Toggle Theme</button>
+      <button id="mouseTrailToggleBtn" class="btn" title="Toggle mouse trail (M)">Mouse Trail</button>
+    </div>
+
+    <section class="panels" id="panels" aria-live="polite">
+      <article class="panel" data-index="0" aria-expanded="false">
+        <h3>
+          <span>1. Job Title</span>
+          <button class="toggle" aria-label="Expand job title">Expand</button>
+        </h3>
+        <div class="body" hidden>
+          <ul>
+            <li>Electrical Power Production Craftsman</li>
+            <li>Power Production Supervisor</li>
+            <li>Contingency Training Supervisor</li>
+            <li>Team Lead / SME (BEAR, TFS, WRM, AMMPS)</li>
+            <li>Software Developer-in-Training (MSSA)</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="panel" data-index="1" aria-expanded="false">
+        <h3>
+          <span>2. Age / Timeline</span>
+          <button class="toggle" aria-label="Expand timeline">Expand</button>
+        </h3>
+        <div class="body" hidden>
+          <ul>
+            <li>18–20: Trainee, Apprentice Power Production</li>
+            <li>21–25: Journeyman, deployments & operations</li>
+            <li>26–35: Senior Craftsman, NCOIC roles</li>
+            <li>36–38: Senior NCO, Workforce leader</li>
+            <li>38+: Software Development student</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="panel" data-index="2" aria-expanded="false">
+        <h3>
+          <span>3. Likes</span>
+          <button class="toggle" aria-label="Expand likes">Expand</button>
+        </h3>
+        <div class="body" hidden>
+          <ul>
+            <li>Building systems — generators, logistics, software</li>
+            <li>Solving problems under pressure</li>
+            <li>Teaching, mentoring, and training</li>
+            <li>Technology — C#, Visual Studio, GitHub, cloud apps</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="panel" data-index="3" aria-expanded="false">
+        <h3>
+          <span>4. Dislikes</span>
+          <button class="toggle" aria-label="Expand dislikes">Expand</button>
+        </h3>
+        <div class="body" hidden>
+          <ul>
+            <li>Micromanagement and broken systems</li>
+            <li>Pretension, stagnation, and toxic leadership</li>
+            <li>Inefficiency and sloppy processes</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="panel" data-index="4" aria-expanded="false">
+        <h3>
+          <span>5. Transferable Skills</span>
+          <button class="toggle" aria-label="Expand skills">Expand</button>
+        </h3>
+        <div class="body" hidden>
+          <ul>
+            <li>Leadership & people development</li>
+            <li>Systems thinking & process design</li>
+            <li>Technical troubleshooting & ops management</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+
+    <footer>© 2025 EchoingTide1822 - James Gill</footer>
+  </main>
+
+  <!-- cursor elements (added/removed at runtime) -->
+  <div id="cursorCore" class="cursor-core" style="display:none" aria-hidden="true"></div>
+
+  <script>
+    // Basic utilities
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+    // Ensure video attempts to play
+    document.addEventListener('DOMContentLoaded', () => {
+      const v = $('#bg-video');
+      if (v) v.play().catch(() => document.body.addEventListener('click', () => v.play(), { once: true }));
+      initPanelToggles();
+      initControls();
+      loadTheme();
+    });
+
+    // Confetti (lightweight)
+    function createConfetti(count = 18) {
+      const colors = ['#00ffff','#ff00ff','#ffd700','#77ff88','#88ccff'];
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.style.position = 'fixed';
+        const size = 6 + Math.random()*12;
+        el.style.width = `${size}px`; el.style.height = `${size}px`;
+        el.style.left = `${Math.random()*innerWidth}px`;
+        el.style.top = `${-20 - Math.random()*60}px`;
+        el.style.background = colors[Math.floor(Math.random()*colors.length)];
+        el.style.borderRadius = Math.random() > 0.5 ? '2px' : '50%';
+        el.style.zIndex = 9998;
+        el.style.pointerEvents = 'none';
+        document.body.appendChild(el);
+        const dx = (Math.random()*800) - 400;
+        const dy = innerHeight + 150 + Math.random()*200;
+        const rot = (Math.random()*720)-360;
+        el.animate([
+          { transform: 'translate(0,0) rotate(0deg)', opacity: 1 },
+          { transform: `translate(${dx}px, ${dy}px) rotate(${rot}deg)`, opacity: 0 }
+        ], { duration: 1700 + Math.random()*1000, easing: 'cubic-bezier(.2,.7,.3,1)' });
+        setTimeout(()=> el.remove(), 3000);
+      }
+    }
+
+    // Panels: expand/collapse
+    function initPanelToggles() {
+      $$('.panel').forEach(panel => {
+        const btn = panel.querySelector('.toggle');
+        const body = panel.querySelector('.body');
+        btn.addEventListener('click', () => togglePanel(panel, body, btn));
+        panel.setAttribute('tabindex','0');
+        panel.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); togglePanel(panel, body, btn); }
+        });
+      });
+    }
+    function togglePanel(panel, body, btn) {
+      const open = panel.getAttribute('aria-expanded') === 'true';
+      panel.setAttribute('aria-expanded', String(!open));
+      if (open) {
+        body.hidden = true; btn.textContent = 'Expand';
+      } else {
+        body.hidden = false; btn.textContent = 'Collapse';
+        panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    // Panel theme cycling
+    const panelThemes = [
+      ['rgba(10,10,30,0.55)','rgba(14,6,36,0.52)','rgba(6,18,28,0.5)'],
+      ['rgba(8,20,16,0.52)','rgba(24,6,20,0.5)','rgba(16,10,28,0.48)'],
+      ['rgba(20,6,6,0.5)','rgba(6,20,20,0.5)','rgba(10,6,24,0.5)']
+    ];
+    let currentTheme = 0;
+    function changePanels() {
+      currentTheme = (currentTheme + 1) % panelThemes.length;
+      const theme = panelThemes[currentTheme];
+      $$('.panel').forEach((p,i) => p.style.background = theme[i % theme.length]);
+      createConfetti(10);
+    }
+
+    // Theme toggle (neon/dim) persisted
+    function loadTheme() {
+      const stored = localStorage.getItem('site-theme') || 'neon';
+      document.body.setAttribute('data-theme', stored === 'dim' ? 'dim' : 'neon');
+    }
+    function toggleTheme() {
+      const current = document.body.getAttribute('data-theme') === 'dim' ? 'dim' : 'neon';
+      const next = current === 'dim' ? 'neon' : 'dim';
+      document.body.setAttribute('data-theme', next);
+      localStorage.setItem('site-theme', next);
+      createConfetti(6);
+    }
+
+    // Mouse trail (lightweight)
+    let mouseTrailEnabled = false;
+    let trailDots = [];
+    const trailCount = 8;
+    function enableMouseTrail() {
+      if (mouseTrailEnabled) return;
+      mouseTrailEnabled = true;
+      const core = $('#cursorCore');
+      core.style.display = 'block';
+      for (let i=0;i<trailCount;i++){
+        const d = document.createElement('div');
+        d.className = 'cursor-trail-dot';
+        d.style.background = i % 2 ? 'rgba(255,0,255,0.14)' : 'rgba(0,255,255,0.12)';
+        d.style.left='0px'; d.style.top='0px';
+        document.body.appendChild(d);
+        trailDots.push(d);
+      }
+      document.addEventListener('mousemove', onMouse);
+    }
+    function disableMouseTrail() {
+      if (!mouseTrailEnabled) return;
+      mouseTrailEnabled = false;
+      $('#cursorCore').style.display = 'none';
+      trailDots.forEach(d => d.remove());
+      trailDots = [];
+      document.removeEventListener('mousemove', onMouse);
+    }
+    function onMouse(e) {
+      const core = $('#cursorCore');
+      core.style.left = e.clientX + 'px';
+      core.style.top = e.clientY + 'px';
+      trailDots.forEach((d, idx) => {
+        const delay = (idx+1) * 8;
+        d.style.transform = `translate(${e.clientX - delay}px, ${e.clientY - delay}px)`;
+        d.style.opacity = String(1 - idx * 0.09);
+      });
+    }
+
+    // Controls wiring + keyboard shortcuts
+    function initControls(){
+      $('#changePanelsBtn').addEventListener('click', changePanels);
+      $('#celebrateBtn').addEventListener('click', () => createConfetti(22));
+      $('#themeToggleBtn').addEventListener('click', toggleTheme);
+      $('#mouseTrailToggleBtn').addEventListener('click', () => {
+        if (mouseTrailEnabled) { disableMouseTrail(); $('#mouseTrailToggleBtn').textContent = 'Mouse Trail'; }
+        else { enableMouseTrail(); $('#mouseTrailToggleBtn').textContent = 'Mouse Trail (On)'; }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable)) return;
+        if (e.key.toLowerCase() === 't') { toggleTheme(); flashBtn('#themeToggleBtn'); }
+        if (e.key.toLowerCase() === 'm') { $('#mouseTrailToggleBtn').click(); flashBtn('#mouseTrailToggleBtn'); }
+        if (e.key.toLowerCase() === 'c') { createConfetti(28); flashBtn('#celebrateBtn'); }
+      });
+
+      function flashBtn(sel) {
+        const b = $(sel);
+        if (!b) return;
+        b.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 240 });
+      }
+    }
+
+    // small accessibility: clicking any li triggers confetti + pulse
+    document.addEventListener('click', (e) => {
+      const li = e.target.closest('.panel li');
+      if (li) {
+        createConfetti(12);
+        li.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.03)' }, { transform: 'scale(1)' }], { duration: 260 });
+      }
+    });
+
+    // expose small helpers for dev console
+    window.Echoing = {
+      createConfetti, toggleTheme, enableMouseTrail, disableMouseTrail, changePanels
+    };
+  </script>
+</body>
+</html>

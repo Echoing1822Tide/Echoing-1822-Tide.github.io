@@ -265,6 +265,7 @@
     // Basic utilities
     const $ = sel => document.querySelector(sel);
     const $$ = sel => Array.from(document.querySelectorAll(sel));
+    let isCinematic = false; // NEW: prevent double-trigger
 
     // Ensure video attempts to play
     document.addEventListener('DOMContentLoaded', () => {
@@ -277,6 +278,9 @@
 
     // Cinematic: fade to black, pause video, then warp
     function startCinematic() {
+      if (isCinematic) return;              // NEW
+      isCinematic = true;                   // NEW
+
       const blackout = $('#blackout');
       const video = $('#bg-video');
       const videoBg = $('#videoBg');
@@ -284,20 +288,19 @@
       blackout.classList.add('show');
       requestAnimationFrame(() => blackout.classList.add('visible'));
       if (videoBg) videoBg.style.opacity = '0';
-      if (video) {
-        try { video.pause(); } catch {}
-      }
-      // small delay to complete fade then start warp
-      setTimeout(() => warpSpeed(), 900);
+      if (video) { try { video.pause(); } catch {} }
+
+      // After fade, begin warp (tune durations here)
+      setTimeout(() => warpSpeed({ starfieldMs: 26000, supernovaMs: 7000 }), 900);
     }
 
-    // Warp speed animation (>= 20s, more stars)
-    function warpSpeed() {
+    // Warp speed animation with strong late acceleration
+    function warpSpeed({ starfieldMs = 24000, supernovaMs = 6000 } = {}) {
       const overlay = $('#warpOverlay');
       overlay.classList.add('active');
       overlay.innerHTML = '';
 
-      const starCount = 1000; // more stars
+      const starCount = 1200; // more stars
       const stars = [];
 
       for (let i = 0; i < starCount; i++) {
@@ -309,70 +312,133 @@
         overlay.appendChild(star);
         stars.push({
           el: star,
-          x: Math.random() * 100, // percent space
+          x: Math.random() * 100,
           y: Math.random() * 100,
-          z: Math.random() * 4000 + 1000 // deeper field
+          z: Math.random() * 5000 + 1500
         });
       }
 
-      const duration = 24000; // 24 seconds
+      const lerp = (a, b, t) => a + (b - a) * t;
+      const clamp01 = v => Math.max(0, Math.min(1, v));
+      const easeInCubic = t => t * t * t;                  // gentle
+      const easeInExpo = t => (t <= 0 ? 0 : Math.pow(2, 10 * t - 10)); // rockets late
+
       let start = null;
       let last = performance.now();
 
-      const easeIn = t => t*t; // slow start
       function animate(ts) {
         if (!start) start = ts;
         const dt = Math.max(0.001, (ts - last) / 1000);
         last = ts;
 
-        const t = Math.min(1, (ts - start) / duration);
-        const accel = easeIn(t);
-        // speed scales up with time
-        const speed = 200 + accel * 2600; // px-equivalent along z per second
+        const elapsed = ts - start;
+        const t = clamp01(elapsed / starfieldMs);
+
+        // Piecewise acceleration: smooth early, explosive late
+        let speed;
+        if (t < 0.85) {
+          const t1 = t / 0.85;
+          speed = lerp(80, 1200, easeInCubic(t1));         // slow build
+        } else {
+          const t2 = (t - 0.85) / 0.15;
+          // normalize expo to 0..1-ish then scale
+          const expo = Math.min(1, easeInExpo(t2) / 1024);
+          speed = lerp(1200, 5200, expo);                  // near-warp burst
+        }
 
         stars.forEach(star => {
           star.z -= speed * dt;
           if (star.z <= 0) {
-            star.z = 5000;
+            star.z = 6000;
             star.x = Math.random() * 100;
             star.y = Math.random() * 100;
           }
-          // simple perspective
-          const scale = 1000 / (star.z + 1);
-          const x = (star.x - 50) * (1 + scale * 12) + 50;
-          const y = (star.y - 50) * (1 + scale * 12) + 50;
-          const size = Math.max(1, scale * 8);
-          const brightness = Math.min(1, scale * 4);
+          // perspective
+          const scale = 1200 / (star.z + 1);
+          const x = (star.x - 50) * (1 + scale * 14) + 50;
+          const y = (star.y - 50) * (1 + scale * 14) + 50;
+          const pxSize = Math.max(1, scale * 9);
+          const brightness = Math.min(1, scale * 5);
 
           const el = star.el;
           el.style.left = `${x}%`;
           el.style.top = `${y}%`;
-          el.style.width = `${size}px`;
-          el.style.height = `${size}px`;
+          el.style.width = `${pxSize}px`;
+          el.style.height = `${pxSize}px`;
           el.style.opacity = brightness;
-          el.style.boxShadow = `0 0 ${size * 3}px rgba(255,255,255,${brightness})`;
+          el.style.boxShadow = `0 0 ${pxSize * 3}px rgba(255,255,255,${brightness})`;
         });
 
-        // approaching supernova in last 2.5s
-        if (duration - (ts - start) < 2500) {
-          const p = 1 - Math.max(0, (duration - (ts - start))) / 2500;
-          overlay.style.background = `radial-gradient(circle, rgba(255,180,80,${p*0.65}) 0%, rgba(0,0,0,0) 65%)`;
+        // Warm-up glow in last 3s before supernova
+        const timeLeft = starfieldMs - elapsed;
+        if (timeLeft < 3000 && timeLeft > 0) {
+          const p = 1 - timeLeft / 3000;
+          overlay.style.background = `radial-gradient(circle, rgba(255,180,80,${p * 0.6}) 0%, rgba(0,0,0,0) 65%)`;
         }
 
-        if (ts - start < duration) {
+        if (elapsed < starfieldMs) {
           requestAnimationFrame(animate);
         } else {
-          // Supernova flash then remain black (blackout stays visible)
-          overlay.style.background = 'radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,150,0,0.9) 40%, rgba(0,0,0,0.95) 100%)';
-          setTimeout(() => {
-            overlay.classList.remove('active');
-            overlay.innerHTML = '';
-            overlay.style.background = '';
-            // keep blackout shown (screen stays black as requested)
-          }, 800);
+          // Begin supernova phase (longer)
+          supernova(supernovaMs, overlay, () => endCinematic());
         }
       }
+
       requestAnimationFrame(animate);
+    }
+
+    // Longer supernova, then clean up and return
+    function supernova(durationMs, overlay, onDone) {
+      const start = performance.now();
+
+      // fade out stars while nova expands
+      const nodes = Array.from(overlay.querySelectorAll('.star'));
+
+      function frame(ts) {
+        const p = Math.min(1, (ts - start) / durationMs);
+
+        // Fade stars
+        nodes.forEach(n => { n.style.opacity = String(1 - p); });
+
+        // Expanding/brightening core, then gentle fade
+        const inner = Math.min(60, 10 + p * 80); // inner radius %>
+        const outer = Math.min(100, 60 + p * 60);
+        const coreAlpha = 1 - Math.max(0, (p - 0.6)) / 0.4; // hold bright till 60%, then fade
+
+        overlay.style.background =
+          `radial-gradient(circle, rgba(255,255,255,${coreAlpha}) 0%,
+                                   rgba(255,200,120,${Math.max(0.6, 1 - p * 0.5)}) ${inner}%,
+                                   rgba(0,0,0,1) ${outer}%)`;
+
+        if (p < 1) {
+          requestAnimationFrame(frame);
+        } else {
+          // Cleanup overlay nodes
+          overlay.classList.remove('active');
+          overlay.innerHTML = '';
+          overlay.style.background = '';
+          if (typeof onDone === 'function') onDone();
+        }
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    // Fade back from black, resume video, allow retrigger
+    function endCinematic() {
+      const blackout = $('#blackout');
+      const video = $('#bg-video');
+      const videoBg = $('#videoBg');
+
+      if (videoBg) videoBg.style.opacity = '1';
+      if (video) { try { video.play(); } catch {} }
+
+      blackout.classList.remove('visible');
+      // Wait for CSS transition (0.8s), then hide
+      setTimeout(() => {
+        blackout.classList.remove('show');
+        isCinematic = false; // allow another run
+      }, 850);
     }
 
     // Panels: expand/collapse on click
@@ -519,7 +585,9 @@
 
     // expose helpers for dev console
     window.Echoing = {
-      toggleTheme, enableMouseTrail, disableMouseTrail, startCinematic
+      toggleTheme, enableMouseTrail, disableMouseTrail, startCinematic,
+      // optional debug:
+      warpSpeed, endCinematic
     };
   </script>
 </body>

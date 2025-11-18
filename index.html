@@ -57,23 +57,34 @@
     }
 
     *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial; background:var(--bg-color);color:var(--text-color);transition:background-color 0.6s ease}
-    .video-background{position:fixed;inset:0;z-index:0;overflow:hidden;background:var(--bg-color);transition:background-color 0.6s ease}
+    html,body{height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:var(--bg-color);color:var(--text-color);transition:background-color 0.6s ease}
+    .video-background{position:fixed;inset:0;z-index:0;overflow:hidden;background:var(--bg-color);transition:opacity .6s ease}
     .video-background video{position:absolute;top:50%;left:50%;min-width:100%;min-height:100%;transform:translate(-50%,-50%);object-fit:cover;filter:contrast(1.02) saturate(1.05) brightness(0.9)}
     .retro-overlay{position:fixed;inset:0;z-index:1;pointer-events:none;background-image:linear-gradient(transparent 60%, rgba(0,0,0,0.12) 100%), radial-gradient(circle at 50% 10%, rgba(255,255,255,0.03), transparent 20%);mix-blend-mode:overlay}
 
+    /* Blackout overlay for fade-to-black */
+    #blackout{position:fixed;inset:0;background:#000;z-index:9000;opacity:0;pointer-events:none;transition:opacity .8s ease;display:none}
+    #blackout.show{display:block}
+    #blackout.visible{opacity:1}
+
     .container{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column;gap:1rem;align-items:center;padding:3.5rem 1rem}
-    h1{font-size:clamp(1.4rem,2.6vw,2.2rem);text-align:center;margin-bottom:.4rem}
-    .controls{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem;z-index:3}
-    .btn{display:inline-flex;align-items:center;gap:.5rem;background:linear-gradient(90deg, rgba(0,255,255,0.06), rgba(255,0,255,0.04));color:var(--text-color);border:1px solid rgba(0,255,255,0.14);padding:.55rem .9rem;border-radius:999px;cursor:pointer;transition:transform .18s,box-shadow .18s}
-    .btn:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.6)}
-    .linkedin-btn{background:linear-gradient(90deg,#0077b5,#00a0dc);color:#fff;border:none;padding:.55rem .9rem}
-    .panels{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;width:min(1100px,100%);margin:0 auto}
-    .panel{background:var(--panel-bg);border-radius:12px;padding:1rem;box-shadow:0 8px 30px rgba(16,14,28,0.6);-webkit-backdrop-filter:blur(var(--panel-blur));backdrop-filter:blur(var(--panel-blur));border:1px solid rgba(255,255,255,0.04);transition:transform .22s,box-shadow .22s,background-color 0.4s ease;min-height:90px;position:relative;cursor:pointer}
+
+    /* High-contrast top bar */
+    .topbar{width:min(1100px,100%);background:rgba(0,0,0,0.55);border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:14px;padding:1rem 1rem 1.1rem;box-shadow:0 8px 30px rgba(0,0,0,0.35)}
+    h1{font-size:clamp(1.4rem,2.6vw,2.2rem);text-align:center;margin-bottom:.7rem;text-shadow:0 2px 10px rgba(0,0,0,.65)}
+    .controls{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;justify-content:center}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,0,0,0.55);color:var(--text-color);border:1px solid rgba(255,255,255,0.16);padding:.6rem 1rem;border-radius:999px;cursor:pointer;transition:transform .18s,box-shadow .18s,background .2s;font-weight:600}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.55);background:rgba(0,0,0,0.7)}
+    .linkedin-btn{background:linear-gradient(90deg,#0077b5,#00a0dc);color:#fff;border:none;padding:.6rem 1rem}
+    .panels{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;width:min(1100px,100%);margin:0 auto}
+    .panel{background:var(--panel-bg);border-radius:12px;padding:1rem;box-shadow:0 8px 30px rgba(16,14,28,0.6);-webkit-backdrop-filter:blur(var(--panel-blur));backdrop-filter:blur(var(--panel-blur));border:1px solid rgba(255,255,255,0.08);transition:transform .22s,box-shadow .22s,background-color 0.4s ease;min-height:90px;position:relative;cursor:pointer}
     .panel:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(16,14,28,0.8)}
     .panel[aria-expanded="true"]{transform:translateY(-6px)}
     .panel h3{color:var(--muted);font-size:1rem;margin-bottom:.4rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem;pointer-events:none}
-    .panel .body{color:var(--text-color);line-height:1.35;margin-top:0.5rem}
+    .panel .body{color:var(--text-color);line-height:1.45;margin-top:0.5rem}
+    .panel .body ul{padding-left:1.1rem}
+    .panel .body li{margin:.25rem 0}
+    .panel .body h4{margin:.6rem 0 .25rem;color:var(--accent-cyan);font-size:1rem}
     footer{margin-top:1.25rem;color:rgba(151,160,255,0.85);font-size:.9rem;text-align:center}
 
     /* Hidden celebrate button */
@@ -81,104 +92,161 @@
     #hiddenCelebrate:hover{opacity:0.1}
 
     /* Warp speed overlay */
-    .warp-overlay{position:fixed;inset:0;z-index:10000;pointer-events:none;display:none}
+    .warp-overlay{position:fixed;inset:0;z-index:10000;pointer-events:none;display:none;overflow:hidden}
     .warp-overlay.active{display:block}
-    .star{position:absolute;background:white;border-radius:50%}
+    .star{position:absolute;background:white;border-radius:50%;will-change:transform,width,height,opacity}
 
     /* cursor trail */
     .cursor-core{position:fixed;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle, var(--accent-cyan), var(--accent-magenta));pointer-events:none;z-index:9999;mix-blend-mode:screen;transform:translate(-50%,-50%);opacity:.95;transition:transform .06s linear;box-shadow:0 0 20px var(--accent-cyan), 0 0 40px var(--accent-magenta);display:none}
     .cursor-trail-dot{position:fixed;border-radius:50%;pointer-events:none;z-index:9998;mix-blend-mode:screen;transition:transform .08s linear,opacity .2s linear}
 
-    @media(max-width:520px){.container{padding:2rem 1rem}}
+    @media(max-width:520px){
+      .container{padding:2rem 1rem}
+      .topbar{padding:.9rem}
+    }
   </style>
 </head>
 <body data-theme="neon">
   <!-- Video + overlay -->
-  <div class="video-background" aria-hidden="true">
-    <video autoplay muted loop id="bg-video" preload="auto">
+  <div class="video-background" aria-hidden="true" id="videoBg">
+    <video autoplay muted loop playsinline id="bg-video" preload="auto">
       <source src="background-final.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
   </div>
   <div class="retro-overlay" aria-hidden="true"></div>
   <div class="warp-overlay" id="warpOverlay"></div>
+  <div id="blackout"></div>
 
   <main class="container">
-    <h1>Career Lifeline – James Gill</h1>
-
-    <div class="controls" role="toolbar" aria-label="Page controls">
-      <a class="btn linkedin-btn" href="https://linkedin.com/in/james-gill-echoing1822tide" target="_blank" rel="noopener noreferrer">Connect on LinkedIn</a>
-      <button id="themeToggleBtn" class="btn" title="Toggle theme (T)">Toggle Theme</button>
-      <button id="mouseTrailToggleBtn" class="btn" title="Toggle mouse trail (M)">Mouse Trail</button>
+    <div class="topbar">
+      <h1>Career Lifeline – James Gill</h1>
+      <div class="controls" role="toolbar" aria-label="Page controls">
+        <a class="btn linkedin-btn" href="https://linkedin.com/in/james-gill-echoing1822tide" target="_blank" rel="noopener noreferrer">Connect on LinkedIn</a>
+        <button id="themeToggleBtn" class="btn" title="Toggle theme (T)">Toggle Theme</button>
+        <button id="mouseTrailToggleBtn" class="btn" title="Toggle mouse trail (M)">Mouse Trail</button>
+      </div>
     </div>
 
     <section class="panels" id="panels" aria-live="polite">
       <article class="panel" data-index="0" aria-expanded="false" tabindex="0">
-        <h3>
-          <span>1. Job Title</span>
-        </h3>
+        <h3><span>1. Job Title</span></h3>
         <div class="body" hidden>
-          <ul>
-            <li>Electrical Power Production Craftsman</li>
-            <li>Power Production Supervisor</li>
-            <li>Contingency Training Supervisor</li>
-            <li>Team Lead / SME (BEAR, TFS, WRM, AMMPS)</li>
-            <li>Software Developer-in-Training (MSSA)</li>
-          </ul>
+          <p>
+            Electrical Power Production Craftsman →
+            Power Production Supervisor →
+            Contingency Training Supervisor →
+            Team Lead / SME (BEAR, TFS, WRM, AMMPS) →
+            Software Developer-in-Training (MSSA Cloud Application Development)
+          </p>
         </div>
       </article>
 
       <article class="panel" data-index="1" aria-expanded="false" tabindex="0">
-        <h3>
-          <span>2. Age / Timeline</span>
-        </h3>
+        <h3><span>2. Age</span></h3>
         <div class="body" hidden>
           <ul>
             <li>18–20: Trainee, Apprentice Power Production</li>
-            <li>21–25: Journeyman, deployments & operations</li>
-            <li>26–35: Senior Craftsman, NCOIC roles</li>
-            <li>36–38: Senior NCO, Workforce leader</li>
-            <li>38+: Software Development student</li>
+            <li>21–25: Journeyman, Iraq/Afghanistan deployments, crisis operations</li>
+            <li>26–30: Senior Craftsman, program builder, inspection reform</li>
+            <li>31–35: NCOIC roles, global deployments, instructor-level performance</li>
+            <li>36–38: Senior NCO, Workforce leader, Equipment Custodian for $258M assets</li>
+            <li>38: Software Development student (C#, Azure, GitHub), MSSA Cohort CCAD21</li>
           </ul>
         </div>
       </article>
 
       <article class="panel" data-index="2" aria-expanded="false" tabindex="0">
-        <h3>
-          <span>3. Likes</span>
-        </h3>
+        <h3><span>3. Likes</span></h3>
         <div class="body" hidden>
           <ul>
-            <li>Building systems — generators, logistics, software</li>
-            <li>Solving problems under pressure</li>
-            <li>Teaching, mentoring, and training</li>
-            <li>Technology — C#, Visual Studio, GitHub, cloud apps</li>
+            <li>Building systems — generators, logistics programs, and now software.</li>
+            <li>Solving problems under pressure — rockets, mortars, broken systems, bureaucracy.</li>
+            <li>Teaching and mentoring — hundreds trained, supervisors coached, teams elevated.</li>
+            <li>Structure with freedom — clear mission, with room to improve the process.</li>
+            <li>Technology — PC building, AMMPS, C#, Visual Studio, GitHub, cloud apps.</li>
+            <li>Meaningful work — missions that protect people or improve lives.</li>
+            <li>Innovation — inspection toolsets, tracking systems, training programs.</li>
+            <li>Calm environments — desert nights, storms, ocean waves, wide open spaces.</li>
+            <li>Perseverance — thriving in challenges that require grit.</li>
           </ul>
         </div>
       </article>
 
       <article class="panel" data-index="3" aria-expanded="false" tabindex="0">
-        <h3>
-          <span>4. Dislikes</span>
-        </h3>
+        <h3><span>4. Dislikes</span></h3>
         <div class="body" hidden>
           <ul>
-            <li>Micromanagement and broken systems</li>
-            <li>Pretension, stagnation, and toxic leadership</li>
-            <li>Inefficiency and sloppy processes</li>
+            <li>Micromanagement — prefer trust, mission clarity, and autonomy.</li>
+            <li>Broken systems with no intent to fix them — always improve what you touch.</li>
+            <li>Pretension and arrogance — value humility and genuine leadership.</li>
+            <li>Stagnation — need growth, movement, and learning.</li>
+            <li>Toxic leadership — punishing instead of developing people.</li>
+            <li>Inefficiency and sloppy processes — a zero-tolerance streak.</li>
+            <li>Light pollution, noisy crowds, claustrophobic environments — prefer open horizons.</li>
+            <li>Disloyalty and dishonesty — self-explanatory.</li>
           </ul>
         </div>
       </article>
 
       <article class="panel" data-index="4" aria-expanded="false" tabindex="0">
-        <h3>
-          <span>5. Transferable Skills</span>
-        </h3>
+        <h3><span>5. Transferable Skills</span></h3>
         <div class="body" hidden>
+          <h4>Leadership & People Development</h4>
           <ul>
-            <li>Leadership & people development</li>
-            <li>Systems thinking & process design</li>
-            <li>Technical troubleshooting & ops management</li>
+            <li>Led 3–55 personnel across multiple missions and deployments.</li>
+            <li>Lead Trainer — trained 800+ supervisors/managers on leadership, performance, and compliance.</li>
+            <li>Mentored dozens of Airmen, accelerating upgrade training by months.</li>
+            <li>Taught complex tasks under pressure (MAAS, BEAR Program, TFS systems, generator systems).</li>
+          </ul>
+
+          <h4>Systems Thinking & Process Design</h4>
+          <ul>
+            <li>Built a 2,022-line inspection system used across 12 programs.</li>
+            <li>Created tracking databases and standardization toolsets.</li>
+            <li>Identified inefficiencies and resolved multi-year backlogs.</li>
+            <li>Designed operational checklists, packing plans, and workflow improvements.</li>
+          </ul>
+
+          <h4>Technical Problem Solving</h4>
+          <ul>
+            <li>Diagnosed and repaired high-value power systems (5kW–12.7kW).</li>
+            <li>Managed $258M in global equipment, 428 UTCs, 12.5K O&M tasks.</li>
+            <li>Executed global deployments supporting 11–16 CCMDs.</li>
+            <li>Troubleshot AMMPS, generators, high-voltage, TFS, MAAS, and LAMS.</li>
+            <li>BIOS/OS troubleshooting, PC rebuilds, electrical + mechanical foundation.</li>
+          </ul>
+
+          <h4>Operational & Project Management</h4>
+          <ul>
+            <li>Oversaw $4.6M in projects and contracts across 55 locations.</li>
+            <li>Led airfield recovery operations protecting $1.2B in fighter aircraft.</li>
+            <li>Managed logistics for 6–24 UTC deployments under urgent deadlines.</li>
+            <li>Coordinated joint operations with Army, Marines, NATO, and international partners.</li>
+          </ul>
+
+          <h4>Instruction, Communication, UX Mindset</h4>
+          <ul>
+            <li>Built structured, user-focused systems to simplify compliance and operations.</li>
+            <li>Designed training modules — clear, repeatable, “user-friendly” (early UX talent).</li>
+            <li>Communicated across ranks and cultures, bridging technical and human needs.</li>
+          </ul>
+
+          <h4>Software & Cloud Foundations (MSSA + Microsoft Learn)</h4>
+          <ul>
+            <li>Completed 6 Learning Paths, 38 Modules, 33+ hours of Microsoft C# training.</li>
+            <li>Passed all module assessments with full mastery.</li>
+            <li>Earned Foundational C# Developer Certification (Microsoft + FreeCodeCamp).</li>
+            <li>Built working console applications; debugged systems; implemented logic, arrays, exceptions.</li>
+            <li>Actively developing cloud development skills (C#, .NET, GitHub, Azure).</li>
+          </ul>
+
+          <h4>Mindset</h4>
+          <ul>
+            <li>Resilient — operated under rockets, mortars, combat conditions.</li>
+            <li>Mission-driven — shows up every time, no excuses.</li>
+            <li>Fast learner — BA, C#, MSSA prerequisites, deployed duties.</li>
+            <li>Systems builder — not just fixing problems; redesigning the blueprint.</li>
           </ul>
         </div>
       </article>
@@ -207,82 +275,104 @@
       loadTheme();
     });
 
-    // Warp speed animation
+    // Cinematic: fade to black, pause video, then warp
+    function startCinematic() {
+      const blackout = $('#blackout');
+      const video = $('#bg-video');
+      const videoBg = $('#videoBg');
+
+      blackout.classList.add('show');
+      requestAnimationFrame(() => blackout.classList.add('visible'));
+      if (videoBg) videoBg.style.opacity = '0';
+      if (video) {
+        try { video.pause(); } catch {}
+      }
+      // small delay to complete fade then start warp
+      setTimeout(() => warpSpeed(), 900);
+    }
+
+    // Warp speed animation (>= 20s, more stars)
     function warpSpeed() {
       const overlay = $('#warpOverlay');
       overlay.classList.add('active');
       overlay.innerHTML = '';
-      
-      const starCount = 200;
+
+      const starCount = 1000; // more stars
       const stars = [];
-      
-      // Create stars
+
       for (let i = 0; i < starCount; i++) {
         const star = document.createElement('div');
         star.className = 'star';
-        const size = Math.random() * 3 + 1;
+        const size = Math.random() * 2 + 0.8;
         star.style.width = `${size}px`;
         star.style.height = `${size}px`;
-        star.style.left = `${Math.random() * 100}%`;
-        star.style.top = `${Math.random() * 100}%`;
         overlay.appendChild(star);
         stars.push({
           el: star,
-          x: parseFloat(star.style.left),
-          y: parseFloat(star.style.top),
-          z: Math.random() * 1000
+          x: Math.random() * 100, // percent space
+          y: Math.random() * 100,
+          z: Math.random() * 4000 + 1000 // deeper field
         });
       }
 
-      let speed = 0;
-      let frameCount = 0;
-      const maxFrames = 180;
+      const duration = 24000; // 24 seconds
+      let start = null;
+      let last = performance.now();
 
-      function animate() {
-        frameCount++;
-        // Accelerate speed
-        speed = Math.pow(frameCount / 60, 2) * 5;
-        
-        if (frameCount > maxFrames - 30) {
-          overlay.style.background = `radial-gradient(circle, rgba(255,100,0,${(frameCount - (maxFrames - 30)) / 30}), transparent)`;
-        }
+      const easeIn = t => t*t; // slow start
+      function animate(ts) {
+        if (!start) start = ts;
+        const dt = Math.max(0.001, (ts - last) / 1000);
+        last = ts;
+
+        const t = Math.min(1, (ts - start) / duration);
+        const accel = easeIn(t);
+        // speed scales up with time
+        const speed = 200 + accel * 2600; // px-equivalent along z per second
 
         stars.forEach(star => {
-          star.z -= speed;
+          star.z -= speed * dt;
           if (star.z <= 0) {
-            star.z = 1000;
+            star.z = 5000;
             star.x = Math.random() * 100;
             star.y = Math.random() * 100;
           }
+          // simple perspective
+          const scale = 1000 / (star.z + 1);
+          const x = (star.x - 50) * (1 + scale * 12) + 50;
+          const y = (star.y - 50) * (1 + scale * 12) + 50;
+          const size = Math.max(1, scale * 8);
+          const brightness = Math.min(1, scale * 4);
 
-          const scale = 1000 / (1000 - star.z);
-          const x = (star.x - 50) * scale + 50;
-          const y = (star.y - 50) * scale + 50;
-          const size = scale * 2;
-          const brightness = Math.min(scale / 3, 1);
-
-          star.el.style.left = `${x}%`;
-          star.el.style.top = `${y}%`;
-          star.el.style.width = `${size}px`;
-          star.el.style.height = `${size}px`;
-          star.el.style.opacity = brightness;
-          star.el.style.boxShadow = `0 0 ${size * 2}px rgba(255,255,255,${brightness})`;
+          const el = star.el;
+          el.style.left = `${x}%`;
+          el.style.top = `${y}%`;
+          el.style.width = `${size}px`;
+          el.style.height = `${size}px`;
+          el.style.opacity = brightness;
+          el.style.boxShadow = `0 0 ${size * 3}px rgba(255,255,255,${brightness})`;
         });
 
-        if (frameCount < maxFrames) {
+        // approaching supernova in last 2.5s
+        if (duration - (ts - start) < 2500) {
+          const p = 1 - Math.max(0, (duration - (ts - start))) / 2500;
+          overlay.style.background = `radial-gradient(circle, rgba(255,180,80,${p*0.65}) 0%, rgba(0,0,0,0) 65%)`;
+        }
+
+        if (ts - start < duration) {
           requestAnimationFrame(animate);
         } else {
-          // Supernova flash
-          overlay.style.background = 'radial-gradient(circle, rgba(255,255,255,1), rgba(255,150,0,0.8))';
+          // Supernova flash then remain black (blackout stays visible)
+          overlay.style.background = 'radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,150,0,0.9) 40%, rgba(0,0,0,0.95) 100%)';
           setTimeout(() => {
             overlay.classList.remove('active');
             overlay.innerHTML = '';
             overlay.style.background = '';
-          }, 500);
+            // keep blackout shown (screen stays black as requested)
+          }, 800);
         }
       }
-
-      animate();
+      requestAnimationFrame(animate);
     }
 
     // Panels: expand/collapse on click
@@ -291,8 +381,8 @@
         const body = panel.querySelector('.body');
         panel.addEventListener('click', () => togglePanel(panel, body));
         panel.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') { 
-            e.preventDefault(); 
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
             togglePanel(panel, body);
           }
         });
@@ -326,13 +416,12 @@
       const newTheme = themes[currentThemeIndex];
       document.body.setAttribute('data-theme', newTheme);
       localStorage.setItem('site-theme', newTheme);
-      
-      // Visual feedback
+
       const flash = document.createElement('div');
-      flash.style.cssText = 'position:fixed;inset:0;background:var(--accent-cyan);opacity:0.3;z-index:9999;pointer-events:none';
+      flash.style.cssText = 'position:fixed;inset:0;background:var(--accent-cyan);opacity:0.25;z-index:8500;pointer-events:none';
       document.body.appendChild(flash);
-      flash.animate([{opacity: 0.3}, {opacity: 0}], {duration: 400});
-      setTimeout(() => flash.remove(), 400);
+      flash.animate([{opacity: 0.25}, {opacity: 0}], {duration: 350});
+      setTimeout(() => flash.remove(), 360);
     }
 
     // Enhanced mouse trail
@@ -346,7 +435,7 @@
       mouseTrailEnabled = true;
       const core = $('#cursorCore');
       core.style.display = 'block';
-      
+
       for (let i = 0; i < trailCount; i++) {
         const d = document.createElement('div');
         d.className = 'cursor-trail-dot';
@@ -361,7 +450,7 @@
         document.body.appendChild(d);
         trailDots.push({el: d, x: 0, y: 0});
       }
-      
+
       document.addEventListener('mousemove', onMouse);
       animateTrail();
     }
@@ -382,7 +471,7 @@
 
     function animateTrail() {
       if (!mouseTrailEnabled) return;
-      
+
       const core = $('#cursorCore');
       core.style.left = mousePos.x + 'px';
       core.style.top = mousePos.y + 'px';
@@ -412,7 +501,8 @@
         }
       });
 
-      $('#hiddenCelebrate').addEventListener('click', warpSpeed);
+      // Secret button triggers cinematic
+      $('#hiddenCelebrate').addEventListener('click', startCinematic);
 
       document.addEventListener('keydown', (e) => {
         if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable)) return;
@@ -429,7 +519,7 @@
 
     // expose helpers for dev console
     window.Echoing = {
-      toggleTheme, enableMouseTrail, disableMouseTrail, warpSpeed
+      toggleTheme, enableMouseTrail, disableMouseTrail, startCinematic
     };
   </script>
 </body>

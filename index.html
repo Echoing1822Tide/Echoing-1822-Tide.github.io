@@ -60,6 +60,8 @@
     html,body{height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:var(--bg-color);color:var(--text-color);transition:background-color 0.6s ease}
     .video-background{position:fixed;inset:0;z-index:0;overflow:hidden;background:var(--bg-color);transition:opacity .6s ease}
     .video-background video{position:absolute;top:50%;left:50%;min-width:100%;min-height:100%;transform:translate(-50%,-50%);object-fit:cover;filter:contrast(1.02) saturate(1.05) brightness(0.9)}
+    .video-background video::-webkit-media-controls{display:none !important}
+    .video-background video::-webkit-media-controls-enclosure{display:none !important}
     .retro-overlay{position:fixed;inset:0;z-index:1;pointer-events:none;background-image:linear-gradient(transparent 60%, rgba(0,0,0,0.12) 100%), radial-gradient(circle at 50% 10%, rgba(255,255,255,0.03), transparent 20%);mix-blend-mode:overlay}
 
     /* Blackout overlay for fade-to-black */
@@ -109,7 +111,7 @@
 <body data-theme="neon">
   <!-- Video + overlay -->
   <div class="video-background" aria-hidden="true" id="videoBg">
-    <video autoplay muted loop playsinline id="bg-video" preload="auto">
+    <video autoplay muted loop playsinline id="bg-video" preload="auto" disablePictureInPicture controlslist="nodownload nofullscreen noremoteplayback">
       <source src="background-final.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video>
@@ -266,7 +268,7 @@
     const $ = sel => document.querySelector(sel);
     const $$ = sel => Array.from(document.querySelectorAll(sel));
     let isCinematic = false;
-    let cancelWarp = null; // NEW
+    let cancelWarp = null;
 
     // Ensure video attempts to play
     document.addEventListener('DOMContentLoaded', () => {
@@ -291,48 +293,48 @@
       if (videoBg) videoBg.style.opacity = '0';
       if (video) { try { video.pause(); } catch {} }
 
-      // Start warp after short fade
-      setTimeout(() => warpSpeed({ starfieldMs: 22000, supernovaMs: 4000, whiteFlashMs: 140 }), 700);
+      // Start warp after fade
+      setTimeout(() => warpSpeed({ starfieldMs: 18000, supernovaMs: 3500, whiteFlashMs: 200 }), 700);
     }
 
-    // REPLACE: Canvas-based warp with star trails, strong late acceleration, longer supernova, and instant white-flash return
-    function warpSpeed({ starfieldMs = 20000, supernovaMs = 4000, whiteFlashMs = 120 } = {}) {
+    // Canvas-based warp with EXTREME star trails and white-flash return
+    function warpSpeed({ starfieldMs = 18000, supernovaMs = 3500, whiteFlashMs = 200 } = {}) {
       const overlay = $('#warpOverlay');
       overlay.classList.add('active');
       overlay.innerHTML = '';
 
       const canvas = document.createElement('canvas');
       canvas.id = 'warpCanvas';
+      canvas.style.cssText = 'width:100%;height:100%;display:block';
       overlay.appendChild(canvas);
       const ctx = canvas.getContext('2d');
 
       let cx, cy, fov, rafId;
-      const depth = 7000;
-      const minZ = 60;
+      const depth = 8000;
+      const minZ = 40;
 
       function resize() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         cx = canvas.width / 2;
         cy = canvas.height / 2;
-        fov = Math.min(canvas.width, canvas.height) * 0.9;
+        fov = Math.min(canvas.width, canvas.height) * 1.1;
       }
       resize();
       window.addEventListener('resize', resize);
 
-      const starCount = Math.max(900, Math.floor((canvas.width * canvas.height) / 1000)); // dense field
+      const starCount = Math.max(1200, Math.floor((canvas.width * canvas.height) / 800));
       const stars = Array.from({ length: starCount }, () => newStar());
 
       function newStar() {
         return {
-          x: (Math.random() * 2 - 1),
-          y: (Math.random() * 2 - 1),
+          x: (Math.random() * 2.4 - 1.2),
+          y: (Math.random() * 2.4 - 1.2),
           z: Math.random() * (depth - minZ) + minZ
         };
       }
 
       ctx.lineCap = 'round';
-      ctx.globalCompositeOperation = 'lighter';
 
       const state = { phase: 'starfield', start: null, last: performance.now(), running: true };
 
@@ -344,22 +346,29 @@
         const elapsed = ts - state.start;
         const t = Math.min(1, elapsed / starfieldMs);
 
-        // Acceleration: slow build -> fast -> insane right before nova
+        // EXTREME acceleration curve
         let speed;
-        if (t < 0.75) {
-          const t1 = t / 0.75;
-          speed = 200 + 1800 * (t1 * t1 * t1);
-        } else if (t < 0.93) {
-          const t2 = (t - 0.75) / 0.18;
-          speed = 2000 + 3000 * (t2 ** 5);
+        if (t < 0.6) {
+          // Slow build
+          const t1 = t / 0.6;
+          speed = 400 + 2800 * (t1 * t1 * t1);
+        } else if (t < 0.85) {
+          // Rapid acceleration
+          const t2 = (t - 0.6) / 0.25;
+          speed = 3200 + 6800 * (t2 ** 4);
         } else {
-          const t3 = (t - 0.93) / 0.07;
-          speed = 5000 + 9000 * Math.min(1, Math.pow(2, 10 * t3) / 1024);
+          // LUDICROUS SPEED
+          const t3 = (t - 0.85) / 0.15;
+          const expo = Math.min(1, Math.pow(2, 12 * t3) / 4096);
+          speed = 10000 + 25000 * expo;
         }
 
-        // Motion-blur persistence
-        ctx.fillStyle = 'rgba(0,0,0,0.24)';
+        // Heavy motion blur for intense trail effect
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.fillStyle = 'rgba(0,0,0,0.15)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.globalCompositeOperation = 'lighter';
 
         for (let i = 0; i < stars.length; i++) {
           const s = stars[i];
@@ -369,45 +378,57 @@
 
           s.z -= speed * dt;
 
-          let off = false;
-          if (s.z < minZ) off = true;
-
-          const sx = cx + (s.x * fov) / s.z;
-          const sy = cy + (s.y * fov) / s.z;
-
-          if (sx < -80 || sx > canvas.width + 80 || sy < -80 || sy > canvas.height + 80) off = true;
-
-          if (off) {
+          if (s.z < minZ) {
             stars[i] = newStar();
             continue;
           }
 
-          const v = Math.hypot(sx - prevX, sy - prevY);
-          const depthNorm = 1 - s.z / depth;
-          const width = Math.min(7, 0.8 + v * 0.15 + depthNorm * 3.5);
-          const alpha = Math.min(1, 0.25 + depthNorm * 0.9);
+          const sx = cx + (s.x * fov) / s.z;
+          const sy = cy + (s.y * fov) / s.z;
 
+          if (sx < -200 || sx > canvas.width + 200 || sy < -200 || sy > canvas.height + 200) {
+            stars[i] = newStar();
+            continue;
+          }
+
+          const velocity = Math.hypot(sx - prevX, sy - prevY);
+          const depthNorm = 1 - s.z / depth;
+          
+          // Thicker, brighter trails at high speed
+          const width = Math.min(12, 1.2 + velocity * 0.08 + depthNorm * 6);
+          const alpha = Math.min(1, 0.4 + depthNorm * 0.8 + velocity * 0.002);
+
+          // Draw trail line
           ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
-          ctx.shadowColor = 'rgba(255,255,255,1)';
-          ctx.shadowBlur = 12 + depthNorm * 34;
+          ctx.shadowColor = 'rgba(200,220,255,0.9)';
+          ctx.shadowBlur = 16 + depthNorm * 50 + velocity * 0.1;
           ctx.lineWidth = width;
           ctx.beginPath();
           ctx.moveTo(prevX, prevY);
           ctx.lineTo(sx, sy);
           ctx.stroke();
+
+          // Bright core dot
+          if (depthNorm > 0.5) {
+            ctx.fillStyle = `rgba(255,255,255,${alpha * 1.2})`;
+            ctx.shadowBlur = 25;
+            ctx.beginPath();
+            ctx.arc(sx, sy, width * 0.6, 0, Math.PI * 2);
+            ctx.fill();
+          }
         }
 
-        // Warm glow before nova
+        // Pre-supernova glow
         const timeLeft = starfieldMs - elapsed;
-        if (timeLeft < 1200) {
-          const p = 1 - timeLeft / 1200;
-          const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(cx, cy) * 0.9);
-          grad.addColorStop(0, `rgba(255,200,120,${p * 0.7})`);
+        if (timeLeft < 2000) {
+          const p = 1 - timeLeft / 2000;
+          ctx.globalCompositeOperation = 'lighter';
+          const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(cx, cy) * 1.2);
+          grad.addColorStop(0, `rgba(255,220,160,${p * 0.8})`);
+          grad.addColorStop(0.5, `rgba(255,180,100,${p * 0.4})`);
           grad.addColorStop(1, 'rgba(0,0,0,0)');
           ctx.fillStyle = grad;
-          ctx.globalCompositeOperation = 'lighter';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.globalCompositeOperation = 'lighter';
         }
 
         if (elapsed < starfieldMs && state.running) {
@@ -423,19 +444,154 @@
         if (!state.start) { state.start = ts; state.last = ts; }
         const p = Math.min(1, (ts - state.start) / supernovaMs);
 
-        // Stronger fade to clear trails
-        ctx.fillStyle = 'rgba(0,0,0,0.4)';
+        // Clear trails with fade
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.fillStyle = 'rgba(0,0,0,0.3)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Expanding, brightening core
-        const r = (Math.max(cx, cy) * (0.5 + p * 1.5));
-        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-        grad.addColorStop(0, `rgba(255,255,255,${Math.min(1, 0.7 + p * 0.6)})`);
-        grad.addColorStop(0.35, `rgba(255,220,150,${Math.max(0.6, 1 - p * 0.4)})`);
-        grad.addColorStop(1, 'rgba(0,0,0,1)');
-        ctx.fillStyle = grad;
+        // Multi-layered supernova core
+        const maxR = Math.max(cx, cy) * 2.8;
+        const coreR = maxR * (0.1 + p * 1.4);
+        
+        // Brighten dramatically at peak (p > 0.7)
+        const peakBrightness = p > 0.7 ? Math.min(1, (p - 0.7) / 0.3) : 0;
+        
+        // Color temperature shift: blue-white → yellow-white → orange-red
+        let coreColor, midColor, outerColor;
+        if (p < 0.3) {
+          // Initial blue-white flash
+          coreColor = [200, 220, 255];
+          midColor = [180, 200, 255];
+          outerColor = [255, 220, 180];
+        } else if (p < 0.6) {
+          // Peak white-yellow
+          coreColor = [255, 255, 255];
+          midColor = [255, 245, 220];
+          outerColor = [255, 200, 150];
+        } else {
+          // Orange-red cooling
+          const t = (p - 0.6) / 0.4;
+          coreColor = [255, 255 - t * 55, 255 - t * 155];
+          midColor = [255, 220 - t * 70, 180 - t * 80];
+          outerColor = [255, 150 - t * 50, 100 - t * 50];
+        }
+
+        const coreAlpha = Math.min(1, 0.85 + peakBrightness * 0.5);
+
+        // Layer 1: Inner core (brightest)
         ctx.globalCompositeOperation = 'source-over';
+        const innerGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreR * 0.25);
+        innerGrad.addColorStop(0, `rgba(${coreColor[0]},${coreColor[1]},${coreColor[2]},${coreAlpha})`);
+        innerGrad.addColorStop(0.7, `rgba(${midColor[0]},${midColor[1]},${midColor[2]},${coreAlpha * 0.8})`);
+        innerGrad.addColorStop(1, `rgba(${midColor[0]},${midColor[1]},${midColor[2]},0)`);
+        ctx.fillStyle = innerGrad;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Layer 2: Mid layer with turbulence
+        const midGrad = ctx.createRadialGradient(cx, cy, coreR * 0.2, cx, cy, coreR * 0.6);
+        midGrad.addColorStop(0, `rgba(${midColor[0]},${midColor[1]},${midColor[2]},${0.7 - p * 0.3})`);
+        midGrad.addColorStop(0.5, `rgba(${outerColor[0]},${outerColor[1]},${outerColor[2]},${0.6 - p * 0.4})`);
+        midGrad.addColorStop(1, `rgba(${outerColor[0]},${outerColor[1]},${outerColor[2]},0)`);
+        ctx.fillStyle = midGrad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Layer 3: Outer expanding shell
+        const outerGrad = ctx.createRadialGradient(cx, cy, coreR * 0.5, cx, cy, coreR);
+        outerGrad.addColorStop(0, `rgba(${outerColor[0]},${outerColor[1]},${outerColor[2]},${0.4 - p * 0.3})`);
+        outerGrad.addColorStop(0.4, `rgba(255,180,100,${0.3 - p * 0.25})`);
+        outerGrad.addColorStop(0.8, `rgba(200,100,50,${0.15 - p * 0.15})`);
+        outerGrad.addColorStop(1, 'rgba(0,0,0,1)');
+        ctx.fillStyle = outerGrad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Shockwave rings (appear at intervals)
+        const shockwaveCount = 3;
+        for (let i = 0; i < shockwaveCount; i++) {
+          const offset = i * 0.15;
+          const shockP = Math.max(0, (p - offset) / (1 - offset));
+          if (shockP > 0 && shockP < 0.8) {
+            const ringR = coreR * (0.6 + shockP * 0.6);
+            const ringThickness = 30 + shockP * 70;
+            const ringAlpha = (0.5 - shockP * 0.5) * (1 - offset);
+            
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.strokeStyle = `rgba(255,220,180,${ringAlpha})`;
+            ctx.lineWidth = ringThickness;
+            ctx.shadowColor = `rgba(255,200,150,${ringAlpha * 0.8})`;
+            ctx.shadowBlur = 40;
+            ctx.beginPath();
+            ctx.arc(cx, cy, ringR, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+        }
+
+        // Particle debris field
+        if (p > 0.3) {
+          const particleP = (p - 0.3) / 0.7;
+          const particleCount = 150;
+          ctx.globalCompositeOperation = 'lighter';
+          
+          for (let i = 0; i < particleCount; i++) {
+            const angle = (i / particleCount) * Math.PI * 2 + particleP * 0.5;
+            const dist = coreR * (0.4 + particleP * 0.8) * (0.8 + Math.sin(i * 13.7) * 0.2);
+            const px = cx + Math.cos(angle) * dist;
+            const py = cy + Math.sin(angle) * dist;
+            const size = (2 + Math.sin(i * 7.3) * 2) * (1 - particleP * 0.7);
+            const alpha = (0.6 - particleP * 0.5) * (0.7 + Math.sin(i * 5.1) * 0.3);
+            
+            const hue = 30 + particleP * 30; // Yellow to red shift
+            ctx.fillStyle = `hsla(${hue}, 100%, 70%, ${alpha})`;
+            ctx.shadowBlur = size * 3;
+            ctx.shadowColor = ctx.fillStyle;
+            ctx.beginPath();
+            ctx.arc(px, py, size, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        // Intense peak bloom effect
+        if (peakBrightness > 0) {
+          ctx.globalCompositeOperation = 'lighter';
+          const bloomGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreR * 0.8);
+          bloomGrad.addColorStop(0, `rgba(255,255,255,${peakBrightness * 0.95})`);
+          bloomGrad.addColorStop(0.3, `rgba(255,255,255,${peakBrightness * 0.6})`);
+          bloomGrad.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.fillStyle = bloomGrad;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // Screen flash at absolute peak
+          if (peakBrightness > 0.8) {
+            const flashIntensity = (peakBrightness - 0.8) / 0.2;
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.fillStyle = `rgba(255,255,255,${flashIntensity * 0.4})`;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+          }
+        }
+
+        // Radial light rays
+        if (p > 0.2 && p < 0.9) {
+          const rayP = (p - 0.2) / 0.7;
+          const rayCount = 24;
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.shadowBlur = 0;
+          
+          for (let i = 0; i < rayCount; i++) {
+            const angle = (i / rayCount) * Math.PI * 2 + rayP * 0.3;
+            const rayLength = coreR * (0.9 + Math.sin(i * 3.7) * 0.3);
+            const rayWidth = 8 + Math.sin(i * 5.3) * 6;
+            const alpha = (0.3 - rayP * 0.25) * (0.6 + Math.sin(i * 2.1) * 0.4);
+            
+            ctx.strokeStyle = `rgba(255,240,200,${alpha})`;
+            ctx.lineWidth = rayWidth;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(
+              cx + Math.cos(angle) * rayLength,
+              cy + Math.sin(angle) * rayLength
+            );
+            ctx.stroke();
+          }
+        }
 
         if (p < 1 && state.running) {
           rafId = requestAnimationFrame(drawSupernova);
@@ -453,50 +609,56 @@
       }
 
       function whiteFlashThenReturn() {
+        // White flash overlay
         const flash = document.createElement('div');
-        flash.style.cssText = 'position:fixed;inset:0;background:#fff;z-index:12000;pointer-events:none';
+        flash.style.cssText = 'position:fixed;inset:0;background:#fff;z-index:12000;pointer-events:none;opacity:1';
         document.body.appendChild(flash);
 
         cleanup();
 
-        // Instantly show site again
+        // Immediately restore page
         const blackout = $('#blackout');
         const video = $('#bg-video');
         const videoBg = $('#videoBg');
 
-        if (blackout) {
-          const prev = blackout.style.transition;
-          blackout.style.transition = 'none';
-          blackout.classList.remove('visible', 'show');
-          blackout.style.display = '';
-          void blackout.offsetHeight; // reflow
-          blackout.style.transition = prev || '';
-        }
-        if (videoBg) videoBg.style.opacity = '1';
-        if (video) { try { video.play(); } catch {} }
+        requestAnimationFrame(() => {
+          // Remove blackout instantly
+          if (blackout) {
+            blackout.style.transition = 'none';
+            blackout.classList.remove('visible', 'show');
+            blackout.style.opacity = '0';
+            blackout.style.display = 'none';
+            // Force reflow
+            void blackout.offsetHeight;
+            // Restore transition
+            setTimeout(() => {
+              blackout.style.transition = '';
+              blackout.style.opacity = '';
+              blackout.style.display = '';
+            }, 50);
+          }
+          
+          // Restore video
+          if (videoBg) videoBg.style.opacity = '1';
+          if (video) {
+            video.currentTime = 0; // Optional: restart from beginning
+            video.play().catch(() => {});
+          }
 
-        setTimeout(() => { flash.remove(); isCinematic = false; }, whiteFlashMs);
+          // Fade out white flash
+          setTimeout(() => {
+            flash.style.transition = 'opacity 0.3s ease-out';
+            flash.style.opacity = '0';
+            setTimeout(() => {
+              flash.remove();
+              isCinematic = false;
+            }, 300);
+          }, whiteFlashMs);
+        });
       }
 
       cancelWarp = cleanup;
       rafId = requestAnimationFrame(drawStarfield);
-    }
-
-    // Fade back from black, resume video, allow retrigger
-    function endCinematic() {
-      const blackout = $('#blackout');
-      const video = $('#bg-video');
-      const videoBg = $('#videoBg');
-
-      if (videoBg) videoBg.style.opacity = '1';
-      if (video) { try { video.play(); } catch {} }
-
-      blackout.classList.remove('visible');
-      // Wait for CSS transition (0.8s), then hide
-      setTimeout(() => {
-        blackout.classList.remove('show');
-        isCinematic = false; // allow another run
-      }, 850);
     }
 
     // Panels: expand/collapse on click
@@ -643,9 +805,7 @@
 
     // expose helpers for dev console
     window.Echoing = {
-      toggleTheme, enableMouseTrail, disableMouseTrail, startCinematic,
-      // optional debug:
-      warpSpeed, endCinematic
+      toggleTheme, enableMouseTrail, disableMouseTrail, startCinematic, warpSpeed
     };
   </script>
 </body>
